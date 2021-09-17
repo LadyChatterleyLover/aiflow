@@ -1,6 +1,6 @@
 # AIFlow
 
-流程可视化
+简单易用的流程图库，可用于流程图展示，也可用于拖拉拽工作台模式
 
 
 ## 访问demo
@@ -23,6 +23,11 @@ npm run dev
 
 
 ## 技术文档
+
+### API文档
+
+https://auto-workflow.github.io/AWorkflow/doc/api/index.html
+
 
 ### 快速开始
 
@@ -125,64 +130,6 @@ let globalConfig = {
 let workflow = new AIFlow(document.getElementById('aw'), {nodes, edges}, globalConfig);
 ```
 
-####  4，配置:
-#####  4.1 节点的文字居中:
-```
-/*
-参考zrender的配置
-1. 用box的width，height 除以2来计算中心点，设置文字的position。
-2. 给文字设置垂直水平居中。
-3. truncate.outerWidth 设置超过这个宽度展示 ...
-*/
-export default {
-    templateName: 'defaultTemplate',
-    node: {
-        box: {
-            name: 'Rect',
-            normal: {
-                shape: {
-                    x: 0,
-                    y: 0,
-                    r: 15,
-                    width: 170,
-                    height: 30
-                }
-            }
-            //...
-        },
-        text: {
-            name: 'Text',
-            // 用box的width和height除以2得到中心点，设置position
-            position: [85, 15],
-            normal: {
-                style: {
-                    text: '<@nodeName>',
-                    fontFamily: 'PingFangSC-Regular',
-                    fontSize: 15,
-                    textFill: '#2A2F44',
-                    // 水平居中
-                    textAlign: 'center',
-                    // 垂直居中
-                    textVerticalAlign: 'middle',
-                     // 超出截断
-                    truncate: {
-                        // 超出该宽度时截断，默认展示...
-                        outerWidth: 110
-                    }
-                }
-            }
-        }
-    }
-}
-```
-
-### API
-
-接口文档： npm run jsdoc
-
-直接访问 /doc/api/index.html
-
-
 ### 基础概念
 
 #### 模版
@@ -191,15 +138,9 @@ export default {
 
 默认为defaultTemplate，由矩形和文案组成
 
-![image](./defaultTemplate.png)
-
 系统内置iconTemplate模版，由一个icon和文案组成
 
-![image](./iconTemplate.png)
-
 系统内置菱形模版diamondTemplate，由菱形和文案组成
-
-![image](./diamondTemplate.png)
 
 当然还可以自定义模版，可以参考demo，定义了一个红色模版
 
@@ -230,6 +171,12 @@ Edge是工作流中的连线，默认的实现类是```src/draw/basicDraw/EdgeVi
 Shape是一些基本形状，目前实现了的有BezierCurve、CirCle、Image、Text、React、Triangle，是对zrender中Displayable中的简单封装。在使用Shape的时候，需要先实例化，然后调用```shape.init()```方法实例化对应的zrender对象，init之后```shape.dom```中存储便是对应的zrender对象。
 需要自定义Shape的时候，需要使用```Shape.extend()```方法。和上面几个类似，具体可参考```src/draw/shape```目录中的代码
 
+
+## doc
+
+npm run jsdoc
+
+访问 http://localhost:9999/doc/api/index.html
 
 ## 测试
 
