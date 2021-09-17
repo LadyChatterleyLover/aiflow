@@ -11,7 +11,7 @@ module.exports = {
     mode: 'development',
     cache: true,
     entry: {
-        index: './demo/dag',
+        dag: './demo/dag',
         animate: './demo/animate',
         autosort: './demo/autosort',
         custom: './demo/custom',
@@ -60,7 +60,7 @@ module.exports = {
         new HtmlWebpackPlugin({
             filename: './demo/dag/index.html',
             template: './demo/dag/index.html',
-            chunks: ['index']
+            chunks: ['dag']
         }),
         new HtmlWebpackPlugin({
             filename: './demo/animate/index.html',

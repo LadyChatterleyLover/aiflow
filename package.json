@@ -3,15 +3,19 @@
   "version": "0.0.4",
   "description": "流程图库",
   "main": "dist/aiflow.js",
+  "module": "src",
   "scripts": {
     "test": "jest test/",
     "dev": "webpack-dev-server --config webpack.config.dev.js",
-    "build": "webpack --config webpack.config.prd.js",
+    "prd": "webpack --config webpack.config.prd.js",
+    "build": "webpack --config webpack.config.build.js",
     "jsdoc": "jsdoc -c jsdoc.json",
     "prepublishOnly": "npm run build",
-    "pub": "npm run publish"
+    "pub": "npm publish --registry=https://registry.npm.org"
   },
-  "sideEffects": false,
+  "sideEffects": [
+    "*.less"
+  ],
   "keywords": [
     "aiflow",
     "auto-workflow",
