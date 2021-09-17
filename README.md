@@ -10,10 +10,15 @@ npm install
 npm run dev
 
 拖拉拽工作台：http://localhost:9999/demo/dag/index.html
+
 动画：http://localhost:9999/demo/animate/index.html
+
 自动排序：http://localhost:9999/demo/autosort/index.html
+
 自定义模版：http://localhost:9999/demo/custom/index.html
+
 默认模版的各种操作：http://localhost:9999/demo/defaultTemplate/index.html
+
 流程图：http://localhost:9999/demo/process/index.html
 
 
