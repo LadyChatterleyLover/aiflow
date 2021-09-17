@@ -1,21 +1,15 @@
 /**
  * @file basic node 画法
- * @author yangpei
+ * @author zhousheng
  */
 
 import Group from 'zrender/lib/container/Group';
-import Node from '../Node';
 import Shape from '../../shape/Shape';
-import '../../shape/RectView';
-import '../../shape/TextView';
-import '../../shape/ImageView';
-import '../../shape/CircleView';
-import '../../shape/PolygonView';
 
 /**
  * 节点
  */
-export default Node.extend({
+export default {
     drawName: 'basicNode',
     props: {
         id: '',
@@ -39,9 +33,9 @@ export default Node.extend({
             const g = this.dom.group;
             const placement = this.props.config.inputCircle.circlePosition || 'top';
             let nodeType = this.props.config.box.name;
-            const inputPoints = nodeType === 'Polygon' ?
-                                this.getPolygonPointsPosition(this.props.input) :
-                                this.getRecPointsPosition(this.props.input, placement);
+            const inputPoints = nodeType === 'Polygon'
+                ? this.getPolygonPointsPosition(this.props.input)
+                : this.getRecPointsPosition(this.props.input, placement);
             this.props.input.forEach((input, index) => {
                 const ShapeClazz = Shape.getClazzByName('Circle');
                 const position = inputPoints[index];
@@ -79,20 +73,21 @@ export default Node.extend({
             let nodeType = this.props.config.box.name;
             let placement = '';
 
-            if (nodeType === 'Polygon') {
-
-            } else {
+            if (nodeType !== 'Polygon') {
                 placement = this.props.config.outputCircle.circlePosition || 'bottom';
             }
-            const outputPoints = nodeType === 'Polygon' ?
-                                this.getPolygonPointsPosition(this.props.output) :
-                                this.getRecPointsPosition(this.props.output, placement);
-
+            const outputPoints = nodeType === 'Polygon'
+                ? this.getPolygonPointsPosition(this.props.output)
+                : this.getRecPointsPosition(this.props.output, placement);
             this.props.output.forEach((output, index) => {
                 const ShapeClazz = Shape.getClazzByName('Circle');
                 const position = outputPoints[index];
+                let config = Object.assign({}, (this.props.config.outputCircle || {}));
+                if (output.config) {
+                    Object.assign(config, output.config);
+                }
                 const props = {
-                    ...this.props.config.outputCircle || {},
+                    ...config,
                     position
                 };
                 const s = new ShapeClazz({
@@ -115,7 +110,7 @@ export default Node.extend({
     /**
      * 渲染整个节点图形
      *
-     * @param {Object} options 渲染参数，主要是Aworkflow的全局配置
+     * @param {Object} options 渲染参数，主要是AIFlow的全局配置
      * @return {zrender.Group} zrender.Group实例
      */
     render(options) {
@@ -123,6 +118,7 @@ export default Node.extend({
         if (g) {
             g.removeAll();
         }
+        g.z = this.props.z;
         g.position[0] = this.props.position[0];
         g.position[1] = this.props.position[1];
         if (this.props.config) {
@@ -148,4 +144,4 @@ export default Node.extend({
         }
         return g;
     }
-});
+};

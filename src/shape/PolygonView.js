@@ -1,12 +1,11 @@
 /**
  * @file polygon
- * @author xueliqiang
+ * @author zhousheng
  */
 
 import Polygon from 'zrender/lib/graphic/shape/Polygon';
-import Shape from './Shape';
 
-export default Shape.extend({
+export default {
     type: 'Polygon',
     props: {
         normal: {
@@ -22,4 +21,4 @@ export default Shape.extend({
         const r = new Polygon(this.getRenderProps());
         return r;
     }
-});
+};

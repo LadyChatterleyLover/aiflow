@@ -1,6 +1,6 @@
 /**
  * @file OptionsManager
- * @author yangpei
+ * @author zhousheng
  */
 
 /**
@@ -8,21 +8,15 @@
  *
  * @class OptionManager
  */
+
+import zrender from 'zrender';
+
+import {defaultGlobalConfig} from './defaultConfig';
+
 export default class OptionsManager {
     constructor(options) {
-        const globalConfig = {
-            // 是否静态图片
-            isStatic: true,
-            // 整个图默认模版
-            templateName: 'defaultTemplate',
-            // 是否需要自动排序，true: 程序智能计算每个node的位置，false: 根据node position来定位
-            autoSort: false,
-            // 自动排序时，true: 水平排序，false: 垂直排序
-            horizontal: true,
-            // 画布元素是否可拖动
-            draggable: true
-        };
-        this.options = Object.assign({}, globalConfig, options);
+        const defaultConf = zrender.util.clone(defaultGlobalConfig);
+        this.options = zrender.util.merge(defaultConf, options, true);
     }
 
     /**
@@ -33,9 +27,9 @@ export default class OptionsManager {
     getZrOptions() {
         const zrDefaltOptions = {
             renderer: 'canvas',
-            devicePixelRatio: '2',
-            width: 'auto',
-            height: 'auto'
+            devicePixelRatio: window.devicePixelRatio,
+            width: this.options.cWidth,
+            height: this.options.cHeight
         };
         if (!this.zrOptions) {
             const keys = Object.keys(zrDefaltOptions);

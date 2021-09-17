@@ -1,95 +1,35 @@
-const path = require('path');
-const webpack = require('webpack');
+/**
+ * @file build配置
+ * @author zhousheng
+ */
+
 const resolve = require('path').resolve;
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+
+const babelConfig = require('./babel.config.js');
 
 module.exports = {
     mode: 'production',
-    entry: {
-        bable: 'babel-polyfill',
-        index: './demo/index',
-        custom: './demo/custom/index',
-        autosort: './demo/autosort/index',
-        animate: './demo/animate/index',
-        process: './demo/process/index'
-    },
+    entry: [
+        './src/index'
+    ],
     output: {
-        filename: '[name].js',
-        path: __dirname + '/dist'
+        filename: 'aiflow.js',
+        library: 'AIFlow',
+        libraryTarget: 'umd',
+        path: resolve(__dirname, 'dist/')
     },
     module: {
         rules: [
             {
-                test: /\.js?$/,
+                test: /\.jsx?$/,
+                exclude: /node_modules/,
                 use: {
                     loader: 'babel-loader',
                     options: {
-                        babelrc: true
+                        ...babelConfig
                     }
                 }
-            },
-            {
-                test: /\.less$/,
-                use: [{
-                        loader: 'style-loader'
-                    },
-                    {
-                        loader: 'css-loader'
-                    },
-                    {
-                        loader: 'postcss-loader',
-                        options: {
-                            plugins: [
-                                require('autoprefixer')({
-                                    browsers: [
-                                        '>1%',
-                                        'last 4 versions',
-                                        'Firefox ESR',
-                                        'not ie < 9'
-                                    ]
-                                })
-                            ]
-                        }
-                    },
-                    {
-                        loader: 'less-loader'
-                    }
-                ]
             }
         ]
-    },
-    plugins: [
-        new CleanWebpackPlugin(['dist']),
-        new HtmlWebpackPlugin({
-            template: './demo/index.html',
-            chunks: ['index']
-        }),
-        new HtmlWebpackPlugin({
-            filename: './demo/custom/index.html',
-            template: './demo/custom/index.html',
-            inject: true,
-            chunks: ['custom']
-        }),
-        new HtmlWebpackPlugin({
-            filename: './demo/autosort/index.html',
-            template: './demo/autosort/index.html',
-            inject: true,
-            chunks: ['autosort']
-        }),
-        new HtmlWebpackPlugin({
-            filename: './demo/animate/index.html',
-            template: './demo/animate/index.html',
-            inject: true,
-            chunks: ['animate']
-        }),
-        new HtmlWebpackPlugin({
-            filename: './demo/process/index.html',
-            template: './demo/process/index.html',
-            inject: true,
-            chunks: ['process']
-        }),
-        new webpack.NamedModulesPlugin()
-    ]
+    }
 };

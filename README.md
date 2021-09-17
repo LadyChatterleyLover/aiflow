@@ -1,14 +1,7 @@
-# auto-workflow
+# AIFlow
 
-用于快速构建各种关系图的库
+流程可视化
 
-qq群：869605396
-
-## 快速开始
-
-npm install aworkflow
-
-或者引用dist文件夹下的产出文件
 
 ## 访问demo
 
@@ -16,27 +9,13 @@ npm install
 
 npm run dev
 
-默认模版：http://localhost:9999/
-
+拖拉拽工作台：http://localhost:9999/demo/dag/index.html
 动画：http://localhost:9999/demo/animate/index.html
-
-自动排列：http://localhost:9999/demo/autosort/index.html
-
+自动排序：http://localhost:9999/demo/autosort/index.html
 自定义模版：http://localhost:9999/demo/custom/index.html
+默认模版的各种操作：http://localhost:9999/demo/defaultTemplate/index.html
+流程图：http://localhost:9999/demo/process/index.html
 
-登陆流程图：http://localhost:9999/demo/process/index.html
-
-也可以访问在线demo:
-
-默认模版：http://zhoushengfe.com/flow/dist/index.html
-
-动画：http://zhoushengfe.com/flow/dist/demo/animate/index.html
-
-自动排列：http://zhoushengfe.com/flow/dist/demo/autosort/index.html
-
-自定义模版：http://zhoushengfe.com/flow/dist/demo/custom/index.html
-
-登录流程图：http://zhoushengfe.com/flow/dist/demo/process/index.html
 
 ## 技术文档
 
@@ -48,7 +27,7 @@ npm run dev
 let node1 = {
     // 唯一标识，必须
     id: '123',
-    // 自定义数据，用于填充模版，nodeName为组件文案
+    // 自定义数据，用于填充模版
     defineData: {
         nodeName: '数据拆分'
     },
@@ -59,10 +38,9 @@ let node1 = {
         {
         }
     ],
-    // 输出圈，对象数组，每个对象表示一个输出，allInputs：能链接到所有node的输入，enbaleInputs：对象数组，每个对象定义可以输入的圈信息（id对应节点，inputIndex对应输入点下标）
+    // 输出圈，对象数组，每个对象表示一个输出。enbaleInputs：对象数组，每个对象定义可以输入的圈信息（id对应节点，inputIndex对应输入点下标），如果undefined,则所以输入点都能连接，如果是空数组，则所有输入点都不能连接。
     output: [
         {
-            allInputs: true,
             enbaleInputs: [{
                 id: '124',
                 inputIndex: 0
@@ -109,33 +87,95 @@ let edges = [
 ```javascript
 // 全局配置
 let globalConfig = {
-    // 是否静态图片，true：节点和连线都不可拖动，false：可以添加事件监听
+    // 是否静态图片，true：节点和连线都不可拖动，false：不做限制
     isStatic: false,
     // 整个图默认模版，默认为defaultTemplate
     templateName: 'defaultTemplate',
     // templateName: 'iconTemplate',
-    // 是否需要自动排序，true: 程序智能计算每个node的位置，false: 根据node position来定位
-    autoSort: true,
-    // 自动排序时，true: 水平排序，false: 垂直排序
-    horizontal: false,
-    // 可选，node对齐方式，start: 水平排列时表示上对齐，垂直排列时表示左对齐 middle: 中间对齐 end: 水平排列时表示下对齐，垂直排列时表示右对齐
-    align: 'middle',
-    // 可选，beginX 起点X坐标，默认10
-    beginX: 30,
-    // 可选，beginY 起点Y坐标，默认10
-    beginY: 30,
-    // 可选，spaceX 横向间距，默认200
-    spaceX: 200,
-    // 可选，spaceY 纵向间距，默认100
-    spaceY: 60
+    // 自动排序参数配置
+    autoSort: {
+        // 是否需要自动排序，true: 程序智能计算每个node的位置，false: 根据node position来定位
+        on: true
+        // 可选，开启自动排序时，配置type。不配置: 使用默认排序方法，withMedium: 使用中位数排序法
+        type: 'withMedium',
+        // 自动排序时，true: 水平排序，false: 垂直排序
+        horizontal: false,
+        // 可选，node对齐方式，start: 水平排列时表示上对齐，垂直排列时表示左对齐 middle: 中间对齐 end: 水平排列时表示下对齐，垂直排列时表示右对齐
+        align: 'middle',
+        // 可选，beginX 起点X坐标，默认10 可选类型: number | 'center' | 'left' | 'right'
+        beginX: 30,
+        // 可选，beginY 起点Y坐标，默认10 可选类型: number | 'middle' | 'top' | 'bottom'
+        beginY: 30,
+        // 可选，spaceX 横向间距，默认200
+        spaceX: 200,
+        // 可选，spaceY 纵向间距，默认100
+        spaceY: 60,
+        // 可选，开启中位数排序法时，处理超出画布逻辑 默认'default'(起点变为0，0) | justify(自动左上角移动) | hidden(隐藏超出部分)
+        overflow: 'hidden',
+        // 可选, 设定分层方法。不填写: 默认分层方法 ｜ barycenter: 重心法，所有节点尽量往底层放
+        hryType: 'barycenter'
+    }
 };
 // 实例化
-let workflow = new AWrokflow(document.getElementById('aw'), {nodes, edges}, globalConfig);
+let workflow = new AIFlow(document.getElementById('aw'), {nodes, edges}, globalConfig);
+```
+
+####  4，配置:
+#####  4.1 节点的文字居中:
+```
+/*
+参考zrender的配置
+1. 用box的width，height 除以2来计算中心点，设置文字的position。
+2. 给文字设置垂直水平居中。
+3. truncate.outerWidth 设置超过这个宽度展示 ...
+*/
+export default {
+    templateName: 'defaultTemplate',
+    node: {
+        box: {
+            name: 'Rect',
+            normal: {
+                shape: {
+                    x: 0,
+                    y: 0,
+                    r: 15,
+                    width: 170,
+                    height: 30
+                }
+            }
+            //...
+        },
+        text: {
+            name: 'Text',
+            // 用box的width和height除以2得到中心点，设置position
+            position: [85, 15],
+            normal: {
+                style: {
+                    text: '<@nodeName>',
+                    fontFamily: 'PingFangSC-Regular',
+                    fontSize: 15,
+                    textFill: '#2A2F44',
+                    // 水平居中
+                    textAlign: 'center',
+                    // 垂直居中
+                    textVerticalAlign: 'middle',
+                     // 超出截断
+                    truncate: {
+                        // 超出该宽度时截断，默认展示...
+                        outerWidth: 110
+                    }
+                }
+            }
+        }
+    }
+}
 ```
 
 ### API
 
-接口文档： http://zhoushengfe.com/flow/api/index.html
+接口文档： npm run jsdoc
+
+直接访问 /doc/api/index.html
 
 
 ### 基础概念
@@ -146,15 +186,15 @@ let workflow = new AWrokflow(document.getElementById('aw'), {nodes, edges}, glob
 
 默认为defaultTemplate，由矩形和文案组成
 
-![image](https://github.com/auto-workflow/AWorkflow/blob/master/defaultTemplate.png)
+![image](./defaultTemplate.png)
 
 系统内置iconTemplate模版，由一个icon和文案组成
 
-![image](https://github.com/auto-workflow/AWorkflow/blob/master/iconTemplate.png)
+![image](./iconTemplate.png)
 
 系统内置菱形模版diamondTemplate，由菱形和文案组成
 
-![image](https://github.com/auto-workflow/AWorkflow/blob/master/diamondTemplate.png)
+![image](./diamondTemplate.png)
 
 当然还可以自定义模版，可以参考demo，定义了一个红色模版
 
@@ -171,9 +211,8 @@ let workflow = new AWrokflow(document.getElementById('aw'), {nodes, edges}, glob
 ### 高级用法，自定义node和edge的基础绘制方法   
 
 #### DrawView
-在渲染工作流中，为了方便地处理缩放，所以整个工作流的图形集合是一个对象，对应zrender中的```Group```类，默认情况下是Aworkflow中的```DrawView```类，在```DrawView```中包含了```NodeView```和```EdgeView```，```NodeView```和```EdgeView```是由不同的Shape组成的Group。    
-如果想自定义一个渲染规则，可以参考```src/draw/basicdraw/DrawView.js```中的代码，使用```Draw.extend()```实现一个自定义的类，需要设置```type```字段，并且实现```render()```方法，```render()```方法中需要将最终使用的zrender的形状实例对象return出去，以便于在Aworkflow中add到zrender对象中。    
-(这个地方实现的好像不太好)
+在渲染工作流中，为了方便地处理缩放，所以整个工作流的图形集合是一个对象，对应zrender中的```Group```类，默认情况下是AIFlow中的```DrawView```类，在```DrawView```中包含了```NodeView```和```EdgeView```，```NodeView```和```EdgeView```是由不同的Shape组成的Group。    
+如果想自定义一个渲染规则，可以参考```src/draw/basicdraw/DrawView.js```中的代码，使用```Draw.extend()```实现一个自定义的类，需要设置```type```字段，并且实现```render()```方法，```render()```方法中需要将最终使用的zrender的形状实例对象return出去，以便于在AIFlow中add到zrender对象中。
     
 #### NodeView
 Node是工作流中的节点，默认的实现类是```src/draw/basicDraw/NodeView```，父类是```src/draw/Node```，Node也是一个```Group```，包含了像文字（Text），图标（Image），矩形（Rect）等基本形状。在NodeView中render输入输出点的时候，会根据点的个数和Node的position来计算出每个点的坐标来绘制，同时可以在config中配置input或者output在node中的位置，如top、right、bottom、left。    
@@ -193,4 +232,5 @@ npm run test
 
 ## 如何贡献
 
+## 讨论
 

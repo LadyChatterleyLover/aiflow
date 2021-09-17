@@ -1,8 +1,8 @@
 /**
  * @file utils
- * @author yangpei
+ * @author zhousheng
  */
-import zrender from 'zrender';
+import zrender, {vector, matrix} from 'zrender';
 
 export function mergeArrays(...arr) {
     if (arr.length === 0) {
@@ -19,18 +19,22 @@ export function mergeArrays(...arr) {
                 if (!isNaN(number)) {
                     if (!newArrars[j]) {
                         newArrars[j] = number;
-                    } else {
+                    }
+                    else {
                         newArrars[j] += number;
                     }
-                } else if (!newArrars[j]) {
+                }
+                else if (!newArrars[j]) {
                     newArrars[j] = arr[i][j];
-                } else {
+                }
+                else {
                     newArrars[j] += arr[i][j];
                 }
 
             }
         }
-    } catch (e) {
+    }
+    catch (e) {
         console.log('遍历出问题了');
     }
     return newArrars;
@@ -188,46 +192,75 @@ export function cacluTrianglePoints(width, height, apex, direction) {
     return points;
 }
 
-
 /**
  * 重新计算移动节点在画布中的位置
  *
  * @param {zrender.Displayable} zrNode 待移动node
+ * @param {number} scale 缩放比例
  * @param {Object} mousedownEvent {e.zrX, e.zrY}
  * @return {Function} 计算mousemove时的位置函数
  */
-export function prepareMoveNode(zrNode, mousedownEvent) {
-    let deltPostion = [mousedownEvent.event.zrX - zrNode.position[0], mousedownEvent.event.zrY - zrNode.position[1]];
+export function prepareMoveNode(zrNode, mousedownEvent, options) {
+    const oPos = [mousedownEvent.event.zrX, mousedownEvent.event.zrY];
+    const rect = zrNode.getBoundingRect();
+    zrNode.updateTransform();
+    zrNode.transform && rect.applyTransform(zrNode.transform);
+    const origTransform = matrix.create();
+    zrNode.transform && matrix.copy(origTransform, zrNode.transform);
+    const rectOrigMin = [rect.x, rect.y];
+    const rectOrigMax = [rect.x + rect.width, rect.y + rect.height];
+    const {
+        cWidth,
+        cHeight,
+        dragWithinCanvas
+    } = options;
+    const ristrictMin = [0, 4];
+    const ristrictMax = [cWidth, cHeight - 4];
 
-    return function moveNode(canvas, workflowInstance, mousemoveEvent) {
-        let {canvasWidth, canvasHeight} = canvas.style;
-        let workflowObj = workflowInstance.workflowObj;
-        let node = workflowObj.nodes.find(n => {
+    return function moveNode(workflowInstance, mousemoveEvent, diffPosition) {
+        const workflowObj = workflowInstance.workflowObj;
+        const node = workflowObj.nodes.find(n => {
             return n.dom.group.id === zrNode.id;
         });
-        let nodeNormalStyle = node.props.config.box.normal;
-        let nodeWidth = nodeNormalStyle.shape.width;
-        let nodeHeight = nodeNormalStyle.shape.height;
+        if (!node) {
+            return;
+        }
+        const dataNode = workflowInstance.data.nodes.find(dataNode => node.props.id === dataNode.id);
+        if (!diffPosition) {
+            let delta = [
+                mousemoveEvent.event.zrX - oPos[0],
+                mousemoveEvent.event.zrY - oPos[1]
+            ];
 
-        let newPos = [mousemoveEvent.event.zrX, mousemoveEvent.event.zrY];
-        let tempPos = [newPos[0] - deltPostion[0], newPos[1] - deltPostion[1]];
-
-        if (tempPos[0] < 0) {
-            tempPos[0] = 0;
+            const [deltaX, deltaY] = dragWithinCanvas ? delta.map((delta, index) => {
+                if (delta < 0) {
+                    if (rectOrigMin[index] < ristrictMin[index]) {
+                        delta = 0;
+                    }
+                    else if (rectOrigMin[index]  + delta < ristrictMin[index]) {
+                        delta = ristrictMin[index] - rectOrigMin[index];
+                    }
+                }
+                else if (delta > 0) {
+                    if (rectOrigMax[index] > ristrictMax[index]) {
+                        delta = 0;
+                    }
+                    else if (rectOrigMax[index] + delta > ristrictMax[index]) {
+                        delta = ristrictMax[index] - rectOrigMax[index];
+                    }
+                }
+                return delta;
+            }) : delta;
+            zrNode.transform = zrNode.transform || matrix.create();
+            matrix.copy(zrNode.transform, origTransform);
+            zrNode.drift(deltaX, deltaY);
         }
-        if (tempPos[0] > canvasWidth - nodeWidth) {
-            tempPos[0] = canvasWidth - nodeWidth;
+        else {
+            zrNode.drift(...diffPosition);
         }
-
-        if (tempPos[1] < 4) {
-            tempPos[1] = 4;
-        }
-        if (tempPos[1] > canvasHeight - nodeHeight - 4) {
-            tempPos[1] = canvasHeight - nodeHeight - 4;
-        }
-        zrNode.position = tempPos;
+        node.props.position = zrNode.position;
+        dataNode.position = zrNode.position;
         zrNode.dirty();
-
         let n = workflowObj.nodes.find(n => {
             return n.dom.group.id === zrNode.id;
         });
@@ -239,27 +272,37 @@ export function prepareMoveNode(zrNode, mousedownEvent) {
  * 从输出点开始拖动画直线
  *
  * @param {Object} outputCircle node输出口
- * @param {Object} workflowObj workflowObj对象
+ * @param {Object} drawGroup drawGroup
+ * @param {Object} srcNode 输出点对象
  * @return {Function} mousemove时画线
  */
-export function prepareCreateLine(outputCircle, workflowObj, srcNode) {
+export function prepareCreateLine(outputCircle, drawGroup, srcNode, lineStyle = {}) {
     let circleParam = srcNode.props.config.outputCircle.normal;
-
-    let lineX1 = outputCircle.position[0] + outputCircle.parent.position[0] * 1;
-    let lineY1 = outputCircle.position[1] + circleParam.shape.r + outputCircle.parent.position[1] * 1;
+    const parent = outputCircle.parent;
+    parent.updateTransform();
+    const m = parent.transform || matrix.create();
+    const pos = [];
+    vector.applyTransform(
+        pos,
+        vector.create(outputCircle.position[0], outputCircle.position[1] + circleParam.shape.r),
+        m
+    );
+    let [lineX1, lineY1] = pos;
 
     return function createLine(zr, tempLine, mousemoveEvent) {
         let vector0 = zrender.vector.create(lineX1, lineY1);
         let vector1 = zrender.vector.create(mousemoveEvent.offsetX, mousemoveEvent.offsetY);
+        tempLine && zr.remove(tempLine);
         if (zrender.vector.distance(vector1, vector0) > 10) {
-            tempLine && zr.remove(tempLine);
             let line = new zrender.Line({
                 shape: {
                     x1: lineX1,
                     y1: lineY1,
                     x2: mousemoveEvent.offsetX,
                     y2: mousemoveEvent.offsetY
-                }
+                },
+                style: lineStyle,
+                z: 100000
             });
             zr.add(line);
             return line;
@@ -271,20 +314,23 @@ export function prepareCreateLine(outputCircle, workflowObj, srcNode) {
  * 判断目标元素的类型 ["node", "edge"]
  *
  * @param {zrender.Displayable} zrElement workflow中保存的zrender图形实例
- * @param {Object} workflowInstance AWorkflow实例
+ * @param {Object} workflowInstance AIFlow实例
  * @return {string} 目标元素类型
  */
 export function getElementType(zrElement, workflowInstance) {
+    if (!zrElement || !zrElement.parent) {
+        return '';
+    }
     let workflowObj = workflowInstance.workflowObj;
     let type = '';
-    let isNode = workflowObj.nodes.some((edge, index) => {
-        if (edge.dom.group.id === zrElement.parent.id) {
+    let isNode = workflowObj.nodes.some(node => {
+        if (node.dom.group.id === zrElement.parent.id) {
             return true;
         }
         return false;
     });
 
-    let isEdge = workflowObj.edges.some((edge, index) => {
+    let isEdge = workflowObj.edges.some(edge => {
         if (edge.dom.group.id === zrElement.parent.id) {
             return true;
         }
@@ -301,7 +347,7 @@ export function getElementType(zrElement, workflowInstance) {
  *
  * @param {zrender.Displayable} zrElement workflow中保存的zrender图形实例
  * @param {string} type 元素类型 ['node', 'edge']
- * @param {Object} workflowInstance AWorkflow实例
+ * @param {Object} workflowInstance AIFlow实例
  * @return {Object} 元素数据
  */
 export function getDataByZrDom(zrElement, type, workflowInstance) {
@@ -313,7 +359,8 @@ export function getDataByZrDom(zrElement, type, workflowInstance) {
             defineData: node.props.defineData,
             id: node.props.id
         };
-    } else if (type === 'edge') {
+    }
+    else if (type === 'edge') {
         let edge = workflowObj.edges.find(edge => edge.dom.group.id === zrElement.parent.id);
         return {
             src: edge.props.src,
@@ -327,7 +374,7 @@ export function getDataByZrDom(zrElement, type, workflowInstance) {
  * 根据输入输出节点的ZRender Dom取得对应的node数据
  *
  * @param {zrender.Displayable} zrCircle 圆圈（输入输出点）的zrender图形实例
- * @param {Object} workflowInstance AWorkflow实例
+ * @param {Object} workflowInstance AIFlow实例
  * @return {Object} 元素数据
  */
 export function getNodeByCircle(zrCircle, workflowInstance) {

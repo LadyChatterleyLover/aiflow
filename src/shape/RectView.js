@@ -1,12 +1,11 @@
 /**
  * @file rect
- * @author yangpei
+ * @author zhousheng
  */
 
 import Rect from 'zrender/lib/graphic/shape/Rect';
-import Shape from './Shape';
 
-export default Shape.extend({
+export default {
     type: 'Rect',
     props: {
         normal: {
@@ -22,4 +21,4 @@ export default Shape.extend({
         const r = new Rect(this.getRenderProps());
         return r;
     }
-});
+};

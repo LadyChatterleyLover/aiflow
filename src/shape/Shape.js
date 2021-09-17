@@ -1,6 +1,6 @@
 /**
  * @file shape view
- * @author yangpei
+ * @author zhousheng
  */
 
 import * as utils from 'zrender/lib/core/util';
@@ -28,13 +28,6 @@ export default class Shape {
         if (!this.dom) {
             throw new Error('render() function needs return a zrender.Displayable instance');
         }
-        const oldStatus = this.status;
-        this.dom.on('mouseover', () => {
-            this.setStatus('hover');
-        });
-        this.dom.on('mouseout', () => {
-            this.setStatus(oldStatus);
-        });
     }
 
     /**

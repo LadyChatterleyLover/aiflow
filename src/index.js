@@ -1,7 +1,7 @@
 /**
- * @file workflow
- * @author zhousheng yangpei xueliqiang
+ * @file index.js
+ * @author zhousheng
  */
 
-import AWorkflow from './AWorkflow';
-export default AWorkflow;
+import AIFlow from './AIFlow';
+export default AIFlow;

@@ -1,6 +1,6 @@
 /**
  * @file Edge view
- * @author yangpei
+ * @author zhousheng
  */
 
 import * as utils from 'zrender/lib/core/util';

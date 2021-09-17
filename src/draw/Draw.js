@@ -1,6 +1,6 @@
 /**
  * @file draw view
- * @author yangpei
+ * @author zhousheng
  */
 
 import * as utils from 'zrender/lib/core/util';
@@ -24,7 +24,7 @@ export default class Draw {
      * 注册画法
      *
      * @param {string} name 画法名称
-     * @param {Class} draw 类
+     * @param {Class} drawClass 类
      */
     static registerDraw(name, drawClass) {
         if (this.draw[name]) {

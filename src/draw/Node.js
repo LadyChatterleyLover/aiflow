@@ -1,6 +1,6 @@
 /**
  * @file Node view
- * @author yangpei
+ * @author zhousheng
  */
 
 import * as utils from 'zrender/lib/core/util';
@@ -34,48 +34,44 @@ export default class Node {
             const {x, y, width, height} = b.shape;
             let start = [];
             let space = 0;
+            const length = points.filter(p => !p.position).length;
             switch (placement) {
                 case 'top':
                     start = [x, y];
-                    space = width / (points.length + 1);
+                    space = width / (length + 1);
                     break;
                 case 'right':
                     start = [x + width, y];
-                    space = height / (points.length + 1);
+                    space = height / (length + 1);
                     break;
                 case 'bottom':
                     start = [x, y + height];
-                    space = width / (points.length + 1);
+                    space = width / (length + 1);
                     break;
                 case 'left':
                     start = [x, y];
-                    space = height / (points.length + 1);
+                    space = height / (length + 1);
                     break;
                 default:
                     start = [x, y];
-                    space = width / (points.length + 1);
+                    space = width / (length + 1);
                     break;
             }
             return points.map((p, index) => {
+                if (p.position) {
+                    return p.position;
+                }
                 if (placement === 'right' || placement === 'left') {
                     return [start[0], start[1] + space * (index + 1)];
                 }
                 else if (placement === 'top' || placement === 'bottom') {
                     return [start[0] + space * (index + 1), start[1]];
                 }
+                return [0, 0];
             });
         }
         return [];
     }
-
-    /**
-     * 将点在给出多边形形状的某一边上等距排列，计算出每个点的坐标
-     *
-     * @param {Array} points 点集合
-     * @param {string} placement 位置top, right, bottom, left
-     * @param {zrender.Polygon=} box 图形
-     * @return {Array<Array<number>>} 坐标
-     */
     getPolygonPointsPosition(circles, box) {
         const b = box || this.dom.box;
         if (b && Array.isArray(circles)) {
@@ -100,8 +96,8 @@ export default class Node {
                         start = points[3];
                         break;
                     default:
-                       start = points[0];
-                       break;
+                        start = points[0];
+                        break;
                 }
                 return [start[0], start[1]];
             });

@@ -1,12 +1,10 @@
 /**
  * @file Image
- * @author yangpei
+ * @author zhousheng
  */
 
 import Image from 'zrender/lib/graphic/Image';
-import Shape from './Shape';
-
-export default Shape.extend({
+export default {
     type: 'Image',
     props: {
         normal: {
@@ -18,4 +16,4 @@ export default Shape.extend({
         const i = new Image(this.getRenderProps());
         return i;
     }
-});
+};

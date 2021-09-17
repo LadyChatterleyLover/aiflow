@@ -1,5 +1,4 @@
-import zrender from 'zrender';
-import AWrokflow from '../../src/index';
+import AIFlow from '../../src/index';
 
 // 渲染参数
 let node1 = {
@@ -115,15 +114,12 @@ let edges = [
 
 // 模版配置，主要用于样式
 let globalConfig = {
+    cWidth: 1000,
+    cHeight: 800,
     // 是否静态图片
     isStatic: true,
     // 整个图默认模版
-    templateName: 'defaultTemplate',
-    // templateName: 'iconTemplate',
-    // 是否需要自动排序，true: 程序智能计算每个node的位置，false: 根据node position来定位
-    autoSort: false,
-    // 自动排序时，true: 水平排序，false: 垂直排序
-    horizontal: false
+    templateName: 'defaultTemplate'
 };
 
-let workflow = new AWrokflow(document.getElementById('aw'), {nodes, edges}, globalConfig);
+let workflow = new AIFlow(document.getElementById('aw'), {nodes, edges}, globalConfig);

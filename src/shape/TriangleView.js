@@ -1,13 +1,12 @@
 /**
  * @file Triangle
- * @author yangpei
+ * @author zhousheng
  */
 
 import Polygon from 'zrender/lib/graphic/shape/Polygon';
-import Shape from './Shape';
 import {cacluTrianglePoints} from '../utils';
 
-export default Shape.extend({
+export default {
     type: 'Triangle',
     props: {
         normal: {
@@ -25,4 +24,4 @@ export default Shape.extend({
         const p = new Polygon(props);
         return p;
     }
-});
+};

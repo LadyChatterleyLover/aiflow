@@ -1,13 +1,12 @@
 /**
  * @file BezierCurveView
- * @author yangpei
+ * @author zhousheng
  */
 
 import BezierCurve from 'zrender/lib/graphic/shape/BezierCurve';
-import Shape from './Shape';
 import {calcuBezizerControlPoints} from '../utils';
 
-export default Shape.extend({
+export default {
     type: 'BezierCurve',
     props: {
         normal: {
@@ -30,4 +29,4 @@ export default Shape.extend({
         const b = new BezierCurve(props);
         return b;
     }
-});
+};

@@ -4,9 +4,8 @@
  */
 
 import Line from 'zrender/lib/graphic/shape/Line';
-import Shape from './Shape';
 
-export default Shape.extend({
+export default {
     type: 'Line',
     props: {
         normal: {
@@ -19,13 +18,6 @@ export default Shape.extend({
         if (!this.dom) {
             throw new Error('render() function needs return a zrender.Displayable instance');
         }
-        const oldStatus = this.status;
-        this.dom.on('mouseover', () => {
-            this.setStatus('hover');
-        });
-        this.dom.on('mouseout', () => { 
-            this.setStatus(oldStatus);
-        });
     },
     render(ctx) {
         const props = this.getRenderProps();
@@ -36,4 +28,4 @@ export default Shape.extend({
         const l = new Line(props);
         return l;
     }
-});
+};

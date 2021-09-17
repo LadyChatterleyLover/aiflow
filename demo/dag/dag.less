@@ -1,0 +1,81 @@
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-button {
+    display: none;
+}
+::-webkit-scrollbar-corner {
+    background-color: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background-color: #aeaeae;
+    min-height: 50px;
+    min-width: 50px;
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+    -webkit-transition: background-color .2s;
+    -o-transition: background-color .2s;
+    transition: background-color .2s;
+}
+::-webkit-scrollbar-track-piece {
+    background-color: #eee;
+}
+::-webkit-scrollbar-track {
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+}
+.ai-flow-dag-box {
+    display: flex;
+    height: calc(100vh - 100px);
+    user-select: none;
+    .module-list-box {
+        width: 200px;
+        height: 100%;
+        border: 1px solid #333;
+        flex: none;
+        ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            li {
+                height: 40px;
+                line-height: 40px;
+                text-align: center;
+                font-size: 12px;
+                margin: 0;
+                padding: 0;
+                cursor: move;
+                &:hover {
+                    background-color: #eaf6fe;
+                }
+            }
+        }
+    }
+    .ai-flow-out-box {
+        flex: auto;
+        overflow: scroll;
+        position: relative;
+        background-color: #fff;
+        .ai-flow-box {
+            width: 1600px;
+            height: 1600px;
+            position: relative;
+            background-color: #f7f7f7;
+        }
+    }
+}
+.workflow-dropdown-box {
+    width: 200px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 9;
+    .ant-dropdown-menu-item {
+        overflow: hidden;
+        .shortcut-tip {
+            float: right;
+            color: #999;
+        }
+    } 
+}

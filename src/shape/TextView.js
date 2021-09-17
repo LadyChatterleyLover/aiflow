@@ -1,12 +1,11 @@
 /**
  * @file Text
- * @author yangpei
+ * @author zhousheng
  */
 
 import Text from 'zrender/lib/graphic/Text';
-import Shape from './Shape';
 
-export default Shape.extend({
+export default {
     type: 'Text',
     props: {
         normal: {
@@ -19,4 +18,4 @@ export default Shape.extend({
         t.position = this.props.position;
         return t;
     }
-});
+};

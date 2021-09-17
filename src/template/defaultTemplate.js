@@ -1,5 +1,9 @@
-// 默认模版
-const defaultTemplate = {
+/**
+ * @file 默认模版
+ * @author zhousheng
+ */
+
+export default {
     templateName: 'defaultTemplate',
     node: {
         box: {
@@ -33,7 +37,7 @@ const defaultTemplate = {
             selected: {
                 style: {
                     stroke: '#2A2F44',
-                    fill: 'rgba(0,29,255,0.10)'
+                    fill: 'rgba(0,29,255,0.80)'
                 },
                 shape: {
                     x: 0,
@@ -46,13 +50,18 @@ const defaultTemplate = {
         },
         text: {
             name: 'Text',
-            position: [31, 8],
+            position: [85, 15],
             normal: {
                 style: {
                     text: '<@nodeName>',
                     fontFamily: 'PingFangSC-Regular',
                     fontSize: 15,
-                    textFill: '#2A2F44'
+                    textFill: '#2A2F44',
+                    textAlign: 'center',
+                    textVerticalAlign: 'middle',
+                    truncate: {
+                        outerWidth: 110
+                    }
                 }
             },
             hover: {
@@ -210,5 +219,3 @@ const defaultTemplate = {
         }
     }
 };
-
-export default defaultTemplate;

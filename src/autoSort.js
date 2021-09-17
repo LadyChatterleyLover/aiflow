@@ -3,6 +3,8 @@
  * @author zhousheng
  */
 
+import zrender from 'zrender';
+
 /**
  * 智能排列
  *
@@ -19,33 +21,48 @@
  * @param {number=} option.spaceY 纵向间距，默认100
  * @return {Object} 返回带position属性的nodes
  */
-export default function (option) {
-    option.nodes.forEach((node, index) => {
+export default function autosort(option, isLast) {
+    option.nodes.forEach(node => {
         node.level = 1;
     });
-    let srcId = '';
-    let toId = '';
-    let srcIndex = 0;
-    let toIndex = 0;
     let srcNode = null;
     let toNode = null;
     // 深度
     let depth = 1;
-    // 排序
-    for (let index = 0, len = option.edges.length; index < len - 1; index++) {
-        for (let jIndex = 0; jIndex < len - 1 - index; jIndex++) {
-            if (option.edges[jIndex].src.split(':')[0] === option.edges[jIndex + 1].to.split(':')[0]) {
-                let temp = option.edges[jIndex];
-                option.edges[jIndex] = option.edges[jIndex + 1];
-                option.edges[jIndex + 1] = temp;
+    // 递归遍历，寻找最大深度
+    function getSrcIds(id, preArr, nodeParents) {
+        const edges = option.edges;
+        edges.forEach(edge => {
+            if (edge.to.split(':')[0] === id) {
+                // 遇到一个，裂变一个数组
+                let tempArr = zrender.util.clone(preArr);
+                nodeParents[nodeParents.length] = tempArr;
+                const srcId = edge.src.split(':')[0];
+                tempArr.push(srcId);
+                getSrcIds(srcId, tempArr, nodeParents);
             }
-        }
+        });
     }
-    option.edges.forEach((edge, index) => {
-        srcId = edge.src.split(':')[0];
-        srcIndex = edge.src.split(':')[1] * 1;
-        toId = edge.to.split(':')[0];
-        toIndex = edge.to.split(':')[1] * 1;
+    // 确定level，遍历node
+    option.nodes.forEach(node => {
+        const nodeParents = [];
+        getSrcIds(node.id, [node.id], nodeParents);
+        node.nodeParents = nodeParents;
+        const nodeDepthArr = nodeParents.map(item => item.length);
+        node.level = Math.max(...nodeDepthArr, 1);
+    });
+    // 确定最大深度
+    depth = Math.max(...option.nodes.map(node => node.level), 1);
+    // 宽度数组
+    const widthArr = new Array(depth);
+    let tempNode;
+    let outIndex = 0;
+    let inIndex = 0;
+    const outLength = option.nodes.length;
+    // 给每个node确定父节点集合和子节点集合
+    option.edges.forEach(edge => {
+        const [srcId, srcPort] = edge.src.split(':');
+        const [toId, toPort] = edge.to.split(':');
         option.nodes.forEach(cNode => {
             if (cNode.id === srcId) {
                 srcNode = cNode;
@@ -54,21 +71,27 @@ export default function (option) {
                 toNode = cNode;
             }
         });
-        toNode.level = Math.max(toNode.level, srcNode.level + 1);
-        depth = Math.max(depth, toNode.level);
-        if (!srcNode.children) {
-            srcNode.children = [toNode.id];
+        if (!srcNode || !toNode) {
+            return;
         }
-        else {
-            srcNode.children.push(toNode.id);
-        }
-        if (!toNode.parents) {
-            toNode.parents = [srcNode.id];
-        }
-        else {
-            toNode.parents.push(srcNode.id);
-        }
+        srcNode.children = [
+            ...(srcNode.children || []),
+            {
+                id: toNode.id,
+                toPort,
+                order: toNode.order
+            }
+        ];
+        toNode.parents = [
+            ...(toNode.parents || []),
+            {
+                id: srcNode.id,
+                srcPort,
+                order: srcNode.order
+            }
+        ];
     });
+    // 如果没有子节点，父节点，设置为空数组
     option.nodes.forEach(node => {
         if (node.children === undefined) {
             node.children = [];
@@ -77,15 +100,7 @@ export default function (option) {
             node.parents = [];
         }
     });
-    // 宽度数组
-    let widthArr = new Array(depth);
-    let lineCount = 0;
-
-    let tempNode;
-    let outIndex = 0;
-    let inIndex = 0;
-    let outLength = option.nodes.length;
-    // 按order排序
+    // 按level排序
     for (outIndex = 0; outIndex < outLength - 1; outIndex++) {
         for (inIndex = 0; inIndex < outLength - 1 - outIndex; inIndex++) {
             if (option.nodes[inIndex].level > option.nodes[inIndex + 1].level) {
@@ -95,7 +110,7 @@ export default function (option) {
             }
         }
     }
-    // 没有子节点的node放置在最后
+    // 第一层按子节点个数降序排列
     for (outIndex = 0; outIndex < outLength - 1; outIndex++) {
         for (inIndex = 0; inIndex < outLength - 1 - outIndex; inIndex++) {
             if (option.nodes[inIndex].level === 1 && option.nodes[inIndex + 1].level === 1) {
@@ -107,100 +122,71 @@ export default function (option) {
             }
         }
     }
-    function arrayMix(arr1, arr2) {
-        return arr1.some((item, index) => {
-            if (arr2.includes(item)) {
-                return true;
-            }
-            else {
-                return false;
-            }
-        });
+    const levelOneZeroArr = option.nodes.filter(node => node.level === 1 && !node.children.length);
+    if (levelOneZeroArr.length > 1) {
+        const levelOneNoneZeroArr = option.nodes.filter(node => node.level === 1 && node.children.length);
+        const oneLevelLen = levelOneNoneZeroArr.length + levelOneZeroArr.length;
+        const centerIndex = Math.round(levelOneNoneZeroArr.length / 2);
+        const preZeroArr = levelOneZeroArr.slice(0, centerIndex);
+        const afterZeroArr = levelOneZeroArr.slice(centerIndex);
+        option.nodes = option.nodes.slice(oneLevelLen);
+        option.nodes.unshift(...preZeroArr, ...levelOneNoneZeroArr, ...afterZeroArr);
     }
-    console.log(option.nodes);
+    // 设置node order
     option.nodes.forEach(node => {
         let level = node.level;
         widthArr[level - 1] = widthArr[level - 1] === undefined ? 1 : widthArr[level - 1] + 1;
         node.order = widthArr[level - 1];
-        lineCount = Math.max(lineCount, node.order);
-        if (node.children === undefined) {
-            node.children = [];
-        }
-        if (node.parents === undefined) {
-            node.parents = [];
-        }
     });
-    // 更新position
+
+    // 对于相同父节点的nodes的排序
+    function sortSameNode(nodes, pId) {
+        const orders = nodes.map(node => node.order).sort((a, b) => a - b);
+        nodes.sort((nodeA, nodeB) => {
+            const aP = nodeA.parents.find(p => p.id === pId);
+            const bP = nodeB.parents.find(p => p.id === pId);
+            return aP.srcPort - bP.srcPort;
+        });
+        nodes.forEach((node, index) => {
+            node.order = orders[index];
+        });
+    }
+    // 如果两个节点有相同的父节点，按port来排序，避免交叉
+    for (let tempLevel = 1; tempLevel <= depth; tempLevel++) {
+        const levelNodes = option.nodes.filter(node => node.level === tempLevel);
+        const preNodes = option.nodes.filter(node => node.level < tempLevel);
+        preNodes.forEach(preNode => {
+            const sameSrcNodes = levelNodes.filter(levelNode =>
+                levelNode.parents.some(pNode => pNode.id === preNode.id));
+            if (sameSrcNodes.length > 1) {
+                sortSameNode(sameSrcNodes, preNode.id);
+            }
+        });
+    }
+
     let {horizontal = true, align = 'middle', beginX = 10, beginY = 10, spaceX = 200, spaceY = 100} = option;
     let coordX = 0;
     let coordY = 0;
     let newNodes = [];
-
-    function updateOrder(node, delta1, delta2) {
-        let {level, order, children} = node;
-        let childrenLen = children.length;
-        option.nodes.forEach((node, index) => {
-            if (node.level <= level) {
-                if (node.order === order) {
-                    node.order += delta1;
-                }
-                else if (node.order > order) {
-                    node.order += delta2;
-                }
-            }
-        });
-        let childrenNodes = option.nodes.filter(node => {
-            return children.includes(node.id);
-        });
-        childrenNodes.forEach((node, index) => {
-            node.order = order + index;
+    const maxOrder = Math.max(...widthArr);
+    if (align === 'middle') {
+        option.nodes.forEach(node => {
+            const {level, order} = node;
+            const delta =  (maxOrder - widthArr[level - 1]) / 2;
+            node.order = order + delta;
         });
     }
-    function updateCurrentOrder(node) {
-        let parents = node.parents;
-        let parentNode = option.nodes.find(item => {
-            return item.id === parents[0];
+    else if (align === 'end') {
+        option.nodes.forEach(node => {
+            const {level, order} = node;
+            const delta =  maxOrder - widthArr[level - 1];
+            node.order = order + delta;
         });
-        if (parentNode.children.length === 1) {
-            node.order = parentNode.order;
-        }
     }
-    let delta1 = 0;
-    let delta2 = 0;
-    let childIndex = 0;
-    option.nodes.forEach((node, index) => {
-        if (align === 'middle') {
-            if (node.children && node.children.length > 1) {
-                delta1 = (node.children.length - 1) / 2;
-                delta2 = node.children.length - 1;
-                updateOrder(node, delta1, delta2);
-            }
-            else if (node.parents && node.parents.length === 1) {
-                updateCurrentOrder(node);
-            }
-        }
-        else if (align === 'end') {
-            if (node.children && node.children.length > 1) {
-                delta1 = node.children.length - 1;
-                updateOrder(node, delta1, delta1);
-            }
-            else if (node.parents && node.parents.length > 1) {
-                /*delta1 = node.parents.length - 1;
-                updateOrder(node, delta1, delta1);*/
-            }
-            else if (node.parents && node.parents.length === 1) {
-                updateCurrentOrder(node);
-            }
-        }
-    });
-
-    console.log('最新：');
-    console.log(option.nodes);
-    console.log(option.edges);
 
     // 横排
     if (horizontal) {
-        option.nodes.forEach((node, index) => {
+        option.nodes.forEach(node => {
             coordX = beginX + (node.level - 1) * spaceX;
             coordY = beginY + (node.order - 1) * spaceY;
             node.position = [coordX, coordY];
@@ -210,14 +196,18 @@ export default function (option) {
             let nodeOutputCircle = node.config.outputCircle;
             let newNodeInputCircle = newNodeTemp.config.inputCircle;
             let newNodeOutputCircle = newNodeTemp.config.outputCircle;
-            newNodeInputCircle.circlePosition = nodeInputCircle.horizontalCirclePosition || nodeInputCircle.circlePosition || 'left';
-            newNodeOutputCircle.circlePosition = nodeOutputCircle.horizontalCirclePosition || nodeOutputCircle.circlePosition || 'right';
+            newNodeInputCircle.circlePosition = nodeInputCircle.horizontalCirclePosition
+            || nodeInputCircle.circlePosition
+            || 'left';
+            newNodeOutputCircle.circlePosition = nodeOutputCircle.horizontalCirclePosition
+            || nodeOutputCircle.circlePosition
+            || 'right';
             newNodes.push(newNodeTemp);
         });
     }
     // 竖排
     else {
-        option.nodes.forEach((node, index) => {
+        option.nodes.forEach(node => {
             coordX = beginX + (node.order - 1) * spaceX;
             coordY = beginY + (node.level - 1) * spaceY;
             node.position = [coordX, coordY];
@@ -230,17 +220,35 @@ export default function (option) {
             let newNodeInputCircle = newNodeTemp.config.inputCircle;
             let newNodeOutputCircle = newNodeTemp.config.outputCircle;
 
-            newNodeInputCircle.circlePosition = nodeInputCircle.verticalCirclePosition || nodeInputCircle.circlePosition || 'top';
-            newNodeOutputCircle.circlePosition = nodeOutputCircle.verticalCirclePosition || nodeOutputCircle.circlePosition || 'bottom';
+            newNodeInputCircle.circlePosition = nodeInputCircle.verticalCirclePosition
+            || nodeInputCircle.circlePosition
+            || 'top';
+            newNodeOutputCircle.circlePosition = nodeOutputCircle.verticalCirclePosition
+            || nodeOutputCircle.circlePosition
+            || 'bottom';
             newNodes.push(newNodeTemp);
         });
     }
-    console.log(newNodes);
-    return newNodes;
+    let xArr = [];
+    let yArr = [];
+    newNodes.forEach(node => {
+        xArr.push(node.position[0]);
+        yArr.push(node.position[1]);
+    });
+    let maxX = Math.max(...xArr);
+    let maxY = Math.max(...yArr);
+    const {cWidth, cHeight} = option;
+
+    if (isLast || maxX < cWidth && maxY < cHeight) {
+        return newNodes;
+    }
+    if (maxX > cWidth) {
+        beginX = Math.max(beginX - (maxX - cWidth), 0);
+    }
+    if (maxY > cHeight) {
+        beginY = Math.max(beginY - (maxY - cHeight), 0);
+    }
+    option.beginX = beginX;
+    option.beginY = beginY;
+    return autosort(option, true);
 }
-
-
-
-
-
-

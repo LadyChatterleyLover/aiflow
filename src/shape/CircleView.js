@@ -1,12 +1,11 @@
 /**
  * @file Circle
- * @author yangpei
+ * @author zhousheng
  */
 
 import Circle from 'zrender/lib/graphic/shape/Circle';
-import Shape from './Shape';
 
-export default Shape.extend({
+export default {
     type: 'Circle',
     props: {
         position: [0, 0],
@@ -20,4 +19,4 @@ export default Shape.extend({
         c.position = this.props.position;
         return c;
     }
-});
+};

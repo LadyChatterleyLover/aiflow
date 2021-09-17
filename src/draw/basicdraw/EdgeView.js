@@ -1,20 +1,15 @@
 /**
  * @file edge basic连线
- * @author yangpei
+ * @author zhousheng
  */
 
 import Group from 'zrender/lib/container/Group';
-import Edge from '../Edge';
 import Shape from '../../shape/Shape';
-import '../../shape/BezierCurveView';
-import '../../shape/TriangleView';
-import '../../shape/LineView';
-import '../../shape/TextView';
 
 /**
  * 连线
  */
-export default Edge.extend({
+export default {
     drawName: 'basicEdge',
     props: {},
     $constructor() {
@@ -59,7 +54,7 @@ export default Edge.extend({
                 normal: {
                     style: {
                         text: this.props.text,
-                        textFill: "#2A2F44",
+                        textFill: '#2A2F44',
                         fontSize: 15
                     }
                 },
@@ -144,23 +139,12 @@ export default Edge.extend({
                     brokenLineBgGroup.add(bgLineTemp.dom);
                 }
             });
-            this.dom.backline = brokenLineBgGroup;
-            this.children.backline = brokenLineBgGroup;
-            g.add(brokenLineBgGroup);
             this.dom.line = brokenLineGroup;
             this.children.line = brokenLineGroup;
             g.add(brokenLineGroup);
-            
-            brokenLineGroup.on('mouseover', () => {
-                brokenLineGroup._children.forEach(item => {
-                    item.trigger('mouseover');
-                });
-                this.dom.triangle.trigger('mouseover');
-            });
-            brokenLineGroup.on('mouseout', () => {
-                brokenLineGroup._children.forEach(item => item.trigger('mouseout'));
-                this.dom.triangle.trigger('mouseout');
-            });
+            this.dom.backline = brokenLineBgGroup;
+            this.children.backline = brokenLineBgGroup;
+            g.add(brokenLineBgGroup);
         }
         else if (this.props.config) {
             this.renderTriangle();
@@ -206,4 +190,4 @@ export default Edge.extend({
         }
         return this.dom.group;
     }
-});
+};

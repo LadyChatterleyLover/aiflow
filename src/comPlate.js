@@ -30,7 +30,7 @@ export default class ComPlate {
     registerTemplate(templateName, templateObj) {
         templateObj.templateName = templateName;
         this.templateObj[templateName] = templateObj;
-        console.log(this.templateObj);
+        // console.log(this.templateObj);
     }
 
     /**
@@ -90,8 +90,6 @@ export default class ComPlate {
             compileObj.edges.push(tempEdge);
             this.updateConnected(compileObj.nodes, edge);
         });
-        console.log('compileObj');
-        console.log(compileObj);
         return compileObj;
     }
 
@@ -101,7 +99,7 @@ export default class ComPlate {
         let srcIndex = Number(src.split(':')[1]);
         let toId = to.split(':')[0];
         let toIndex = Number(to.split(':')[1]);
-        nodes.some(node => {
+        nodes.forEach(node => {
             if (node.id === srcId) {
                 node.output[srcIndex].status = 'connected';
             }

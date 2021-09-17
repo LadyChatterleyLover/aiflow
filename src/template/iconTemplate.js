@@ -1,5 +1,9 @@
+/**
+ * @file icon模版
+ * @author zhousheng
+ */
 import zrender from 'zrender';
-import defaultTemplate from '../../src/template/defaultTemplate';
+import defaultTemplate from './defaultTemplate';
 
 let iconTemplate = {
 };

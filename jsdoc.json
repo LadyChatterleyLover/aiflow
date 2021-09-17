@@ -1,6 +1,6 @@
 {
   "source": {
-    "include": ["src/AWorkflow.js"],
+    "include": ["src/AIFlow.js"],
     "includePattern": ".+\\.js(doc)?$"
   },
   "opts": {
@@ -12,7 +12,7 @@
   },
   "plugins": ["./node_modules/jsdoc-export-default-interop/dist/index"],
   "templates": {
-    "applicationName": "AWorkflow",
+    "applicationName": "AIFlow",
     "cleverLinks": false,
     "monospaceLinks": true,
     "useLongnameInNav": false,
