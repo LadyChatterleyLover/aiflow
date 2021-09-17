@@ -5,24 +5,24 @@
 
 ## demo
 
-拖拉拽工作台：https://auto-workflow.github.io/AWorkflow/output/demo/dag/index.html
+拖拉拽工作台：https://auto-workflow.github.io/aiflow/output/demo/dag/index.html
 
-动画：https://auto-workflow.github.io/AWorkflow/output/demo/animate/index.html
+动画：https://auto-workflow.github.io/aiflow/output/demo/animate/index.html
 
-自动排序：https://auto-workflow.github.io/AWorkflow/output/demo/autosort/index.html
+自动排序：https://auto-workflow.github.io/aiflow/output/demo/autosort/index.html
 
-自定义模版：https://auto-workflow.github.io/AWorkflow/output/demo/custom/index.html
+自定义模版：https://auto-workflow.github.io/aiflow/output/demo/custom/index.html
 
-默认模版的各种操作：https://auto-workflow.github.io/AWorkflow/output/demo/defaultTemplate/index.html
+默认模版的各种操作：https://auto-workflow.github.io/aiflow/output/demo/defaultTemplate/index.html
 
-流程图：https://auto-workflow.github.io/AWorkflow/output/demo/process/index.html
+流程图：https://auto-workflow.github.io/aiflow/output/demo/process/index.html
 
 
 ## 技术文档
 
 ### API文档
 
-https://auto-workflow.github.io/AWorkflow/doc/api/index.html
+https://auto-workflow.github.io/aiflow/doc/api/AIFlow.html
 
 
 ### 快速开始
@@ -184,4 +184,3 @@ npm run test
 ## 讨论
 
 qq群：869605396
-
