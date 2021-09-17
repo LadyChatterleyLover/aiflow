@@ -1,6 +1,6 @@
 {
   "name": "aiflow",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "流程图库",
   "main": "dist/aiflow.js",
   "module": "src",
@@ -11,7 +11,7 @@
     "build": "webpack --config webpack.config.build.js",
     "jsdoc": "jsdoc -c jsdoc.json",
     "prepublishOnly": "npm run build",
-    "pub": "npm publish --registry=https://registry.npm.org"
+    "pub": "npm publish --registry=https://registry.npmjs.org/"
   },
   "sideEffects": [
     "*.less"
