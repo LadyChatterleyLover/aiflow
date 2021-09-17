@@ -3,23 +3,19 @@
 简单易用的流程图库，可用于流程图展示，也可用于拖拉拽工作台模式
 
 
-## 访问demo
+## demo
 
-npm install
+拖拉拽工作台：https://auto-workflow.github.io/AWorkflow/output/demo/dag/index.html
 
-npm run dev
+动画：https://auto-workflow.github.io/AWorkflow/output/demo/animate/index.html
 
-拖拉拽工作台：http://localhost:9999/demo/dag/index.html
+自动排序：https://auto-workflow.github.io/AWorkflow/output/demo/autosort/index.html
 
-动画：http://localhost:9999/demo/animate/index.html
+自定义模版：https://auto-workflow.github.io/AWorkflow/output/demo/custom/index.html
 
-自动排序：http://localhost:9999/demo/autosort/index.html
+默认模版的各种操作：https://auto-workflow.github.io/AWorkflow/output/demo/defaultTemplate/index.html
 
-自定义模版：http://localhost:9999/demo/custom/index.html
-
-默认模版的各种操作：http://localhost:9999/demo/defaultTemplate/index.html
-
-流程图：http://localhost:9999/demo/process/index.html
+流程图：https://auto-workflow.github.io/AWorkflow/output/demo/process/index.html
 
 
 ## 技术文档
@@ -30,6 +26,14 @@ https://auto-workflow.github.io/AWorkflow/doc/api/index.html
 
 
 ### 快速开始
+
+#### 安装
+
+npm i aiflow
+
+#### 引用
+
+import AIFlow from 'aiflow';
 
 ####  1，定义node:
 
@@ -171,13 +175,6 @@ Edge是工作流中的连线，默认的实现类是```src/draw/basicDraw/EdgeVi
 Shape是一些基本形状，目前实现了的有BezierCurve、CirCle、Image、Text、React、Triangle，是对zrender中Displayable中的简单封装。在使用Shape的时候，需要先实例化，然后调用```shape.init()```方法实例化对应的zrender对象，init之后```shape.dom```中存储便是对应的zrender对象。
 需要自定义Shape的时候，需要使用```Shape.extend()```方法。和上面几个类似，具体可参考```src/draw/shape```目录中的代码
 
-
-## doc
-
-npm run jsdoc
-
-访问 http://localhost:9999/doc/api/index.html
-
 ## 测试
 
 npm run test
@@ -185,4 +182,6 @@ npm run test
 ## 如何贡献
 
 ## 讨论
+
+qq群：869605396
 
