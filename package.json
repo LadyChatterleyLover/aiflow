@@ -1,9 +1,8 @@
 {
   "name": "aiflow",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "流程图库",
   "main": "dist/aiflow.js",
-  "module": "src",
   "scripts": {
     "test": "jest test/",
     "dev": "webpack-dev-server --config webpack.config.dev.js",
