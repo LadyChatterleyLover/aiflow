@@ -131,10 +131,34 @@ let globalConfig = {
     }
 };
 // 实例化
-let workflow = new AIFlow(document.getElementById('aw'), {nodes, edges}, globalConfig);
+const aiflowIns = new AIFlow(document.getElementById('aw'), {nodes, edges}, globalConfig);
+```
+
+#### 事件监听
+
+```javascript
+// AIFlow支持7种鼠标事件和15种自定义事件
+// const MOUSE_EVENTS = ['mousedown', 'click', 'mouseover', 'mouseout', 'mouseup', 'mousemove', 'contextmenu'];
+// const CUSTOM_EVENTS = ['dragNode', 'dragNodeEnd', 'addEdge', 'removeEdge', 'addNode', 'removeNode', 'nodeSelected', 'edgeSelected', 'copyNodes', 'pasteNodes', 'frameSelectInit', 'frameSelectEnd', 'pan', 'zoom', 'graphTransformed'];
+aiflowIns.on('contextmenu', (e, ins) => {
+    console.log('e:', e);
+    console.log('ins', ins);
+});
+aiflowIns.on('nodeSelected', (e, ins) => {
+    console.log('e:', e);
+    console.log('ins', ins);
+});
 ```
 
 ### 基础概念
+
+#### node
+
+节点，可以定义使用的模版，模版中参数，输入，输出圈信息
+
+#### edge
+
+连线，可以定义模版，连线信息
 
 #### 模版
 
@@ -150,13 +174,48 @@ let workflow = new AIFlow(document.getElementById('aw'), {nodes, edges}, globalC
 
 定义的模版可以在node和edge中使用，这样就可以画出不同的节点和连线了
 
-#### node
+#### 自定义模版
 
-节点，可以定义使用的模版，模版中参数，输入，输出圈信息
-
-#### edge
-
-连线，可以定义模版，连线信息
+```javascript
+// 模版对象，可以参考src/template下的模版配置
+let redTemplate = {
+    node: {
+        // 元素名称为'box'
+        box: {
+            // name为形状，目前支持Rect、Circle、Image、Text、Line、Polygon、Text、Triangle、Beziercurve
+            // 每种形状的具体配置，可以参考zrender文档：https://ecomfe.github.io/zrender-doc/public/api.html#zrenderdisplayable
+            name: 'Rect',
+            // 正常态的样式配置
+            normal: {
+                style: {
+                    stroke: '#ff0000',
+                    fill: '#fff'
+                },
+                shape: {
+                    x: 0,
+                    y: 0,
+                    r: 15,
+                    width: 170,
+                    height: 30
+                }
+            },
+            // hover态
+            hover: {...},
+            // 选中态
+            selected: {...}
+        },
+        ...
+    },
+    edge: {...}
+};
+// 组册模版
+AIFlow.registerTemplate('redTemplate', redTemplate);
+// 在项目中使用
+let globalConfig = {
+    templateName: 'redTemplate',
+    ...
+};
+```
 
 ### 高级用法，自定义node和edge的基础绘制方法   
 

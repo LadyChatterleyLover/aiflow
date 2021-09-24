@@ -263,3 +263,12 @@ let globalConfig = {
 };
 let workflow = new AIFlow(document.getElementById('aw'), {nodes, edges}, globalConfig);
 
+workflow.on('click', (e, ins) => {
+    console.log('e:', e);
+    console.log('ins:', ins);
+});
+workflow.on('nodeSelected', (e, ins) => {
+    console.log('e:', e);
+    console.log('nodeSelected:', ins);
+});
+

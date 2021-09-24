@@ -1,6 +1,6 @@
 {
   "name": "aiflow",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "流程图库",
   "main": "dist/aiflow.js",
   "scripts": {

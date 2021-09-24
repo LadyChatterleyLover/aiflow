@@ -139,7 +139,13 @@ export default class AIFlow {
         return rect;
     }
 
-    // 注册模版
+    /**
+     * 注册模版
+     *
+     * @param {string} templateName 模版名称
+     * @param {Object} templateObj 模版对象
+     * @return {undefined}
+     */
     static registerTemplate(...args) {
         comPlate.registerTemplate.call(comPlate, ...args);
     }
