@@ -2,7 +2,7 @@
  * @file basic画法
  * @author zhousheng
  */
-import Group from 'zrender/lib/container/Group';
+import {Group} from 'zrender';
 import Node from '../Node';
 import Edge from '../Edge';
 import './NodeView';

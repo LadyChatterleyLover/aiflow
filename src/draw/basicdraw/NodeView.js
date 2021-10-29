@@ -3,7 +3,7 @@
  * @author zhousheng
  */
 
-import Group from 'zrender/lib/container/Group';
+import {Group} from 'zrender';
 import Shape from '../../shape/Shape';
 
 /**
@@ -38,10 +38,11 @@ export default {
                 : this.getRecPointsPosition(this.props.input, placement);
             this.props.input.forEach((input, index) => {
                 const ShapeClazz = Shape.getClazzByName('Circle');
-                const position = inputPoints[index];
+                const [x, y] = inputPoints[index];
                 const props = {
                     ...this.props.config.inputCircle || {},
-                    position
+                    x,
+                    y
                 };
                 const s = new ShapeClazz({
                     props
@@ -81,14 +82,15 @@ export default {
                 : this.getRecPointsPosition(this.props.output, placement);
             this.props.output.forEach((output, index) => {
                 const ShapeClazz = Shape.getClazzByName('Circle');
-                const position = outputPoints[index];
+                const [x, y] = outputPoints[index];
                 let config = Object.assign({}, (this.props.config.outputCircle || {}));
                 if (output.config) {
                     Object.assign(config, output.config);
                 }
                 const props = {
                     ...config,
-                    position
+                    x,
+                    y
                 };
                 const s = new ShapeClazz({
                     props
@@ -118,9 +120,11 @@ export default {
         if (g) {
             g.removeAll();
         }
-        g.z = this.props.z;
-        g.position[0] = this.props.position[0];
-        g.position[1] = this.props.position[1];
+        g.z = this.props.z || 0;
+        // g.position[0] = this.props.position[0];
+        // g.position[1] = this.props.position[1];
+        g.x = this.props.x || this.props.position[0];
+        g.y = this.props.y || this.props.position[1];
         if (this.props.config) {
             // input，output需要根据box的坐标进行位置修正，所以单独渲染
             for (let key in this.props.config) {

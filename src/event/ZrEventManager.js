@@ -4,7 +4,7 @@
  * @author zhousheng
  */
 
-import zrender, {vector, matrix} from 'zrender';
+import {Rect, matrix, Group, Line} from 'zrender';
 
 import * as utils from '../utils';
 
@@ -149,9 +149,9 @@ export default class ZrEventManager {
     }
     createGuideLine(x, y, width, height) {
         const shapeArr = this.calLinePoint(x, y, width, height);
-        const guideGroup = new zrender.Group();
+        const guideGroup = new Group();
         shapeArr.forEach(shape => {
-            guideGroup.add(new zrender.Line({
+            guideGroup.add(new Line({
                 style: this.guideLine.style,
                 shape,
                 z: 100000
@@ -267,7 +267,7 @@ export default class ZrEventManager {
         const yMax = Math.max(...yMaxArr);
         const nodeWidth = xMax - xMin;
         const nodeHeight = yMax - yMin;
-        this.frameSelectMoveIns = new zrender.Rect({
+        this.frameSelectMoveIns = new Rect({
             invisible: true,
             shape: {
                 x: 0,
@@ -278,7 +278,9 @@ export default class ZrEventManager {
             style: this.optionsManager.options.frameSelect.style,
             z: 100000
         });
-        this.frameSelectMoveIns.position = [xMin, yMin];
+        // this.frameSelectMoveIns.position = [xMin, yMin];
+        this.frameSelectMoveIns.x = xMin;
+        this.frameSelectMoveIns.y = yMin;
         this.zr.add(this.frameSelectMoveIns);
         this.frameMove = this.prepareMoveFrame(this.frameSelectMoveIns, e);
     }

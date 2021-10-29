@@ -2,12 +2,12 @@
  * @file icon模版
  * @author zhousheng
  */
-import zrender from 'zrender';
+import {util} from 'zrender';
 import defaultTemplate from './defaultTemplate';
 
 let iconTemplate = {
 };
-zrender.util.merge(iconTemplate, defaultTemplate, {
+util.merge(iconTemplate, defaultTemplate, {
     templateName: 'iconTemplate'
 });
 iconTemplate.node.icon = {

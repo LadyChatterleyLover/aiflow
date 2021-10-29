@@ -3,12 +3,12 @@
  * @author zhousheng
  */
 
-import zrender from 'zrender';
+import {util} from 'zrender';
 import defaultTemplate from './defaultTemplate';
 
 let diamondTemplate = {
 };
-zrender.util.merge(diamondTemplate, defaultTemplate, {
+util.merge(diamondTemplate, defaultTemplate, {
     templateName: 'diamondTemplate'
 });
 diamondTemplate.node.box.name = 'Polygon';
@@ -18,7 +18,9 @@ diamondTemplate.node.box.normal.shape = {
     // height: 100,
     // width: 170
 };
-diamondTemplate.node.text.position = [45, 40];
+// diamondTemplate.node.text.position = [45, 40];
+diamondTemplate.node.text.x = 45;
+diamondTemplate.node.text.y = 40;
 
 export default diamondTemplate;
 

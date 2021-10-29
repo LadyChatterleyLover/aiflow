@@ -3,7 +3,7 @@
  * @author zhousheng
  */
 
-import Group from 'zrender/lib/container/Group';
+import {Group} from 'zrender';
 import Shape from '../../shape/Shape';
 
 /**
@@ -58,7 +58,9 @@ export default {
                         fontSize: 15
                     }
                 },
-                position: this.props.textPosition
+                // position: this.props.textPosition
+                x: this.props.x || this.props.textPosition[0],
+                y: this.props.y || this.props.textPosition[1]
             };
             const s = new ShapeClazz({props});
             s.init();

@@ -3,7 +3,7 @@
  * @author dailin
  */
 
-import zrender from 'zrender';
+import {util} from 'zrender';
 
 /**
  * 1 创建节点、创建边
@@ -459,7 +459,7 @@ export class GraphLayout {
             edges.forEach(edge => {
                 if (edge.to.split(':')[0] === id) {
                     // 遇到一个，裂变一个数组
-                    let tempArr = zrender.util.clone(preArr);
+                    let tempArr = util.clone(preArr);
                     nodeParents[nodeParents.length] = tempArr;
                     const srcId = edge.src.split(':')[0];
                     tempArr.push(srcId);

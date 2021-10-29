@@ -3,7 +3,7 @@
  * @author zhousheng
  */
 
-import zrender from 'zrender';
+import {util} from 'zrender';
 import defaultTemplate from './template/defaultTemplate';
 import iconTemplate from './template/iconTemplate';
 import diamondTemplate from './template/diamondTemplate';
@@ -30,7 +30,6 @@ export default class ComPlate {
     registerTemplate(templateName, templateObj) {
         templateObj.templateName = templateName;
         this.templateObj[templateName] = templateObj;
-        // console.log(this.templateObj);
     }
 
     /**
@@ -130,6 +129,6 @@ export default class ComPlate {
      * @return {undefined}
      */
     updateTemplate(templateName, templateUpdateObj) {
-        zrender.util.merge(this.templateObj[templateName], templateUpdateObj);
+        util.merge(this.templateObj[templateName], templateUpdateObj);
     }
 }

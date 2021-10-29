@@ -9,14 +9,14 @@
  * @class OptionManager
  */
 
-import zrender from 'zrender';
+import {util} from 'zrender';
 
 import {defaultGlobalConfig} from './defaultConfig';
 
 export default class OptionsManager {
     constructor(options) {
-        const defaultConf = zrender.util.clone(defaultGlobalConfig);
-        this.options = zrender.util.merge(defaultConf, options, true);
+        const defaultConf = util.clone(defaultGlobalConfig);
+        this.options = util.merge(defaultConf, options, true);
     }
 
     /**

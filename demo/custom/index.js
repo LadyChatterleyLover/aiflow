@@ -53,7 +53,7 @@ let redTemplate = {
                     text: '<@nodeName>',
                     fontFamily: 'PingFangSC-Regular',
                     fontSize: 15,
-                    textFill: '#ff0000'
+                    fill: '#ff0000'
                 }
             }
         },

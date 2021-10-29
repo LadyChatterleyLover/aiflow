@@ -217,6 +217,19 @@ let globalConfig = {
 };
 ```
 
+### 1.x 版本升级到2.x版本注意事项
+
+1.x => 2.x字段变更：
+
+position => x y
+
+textFill => fill
+
+textAlign => algin
+
+textVerticalAlign => verticalAlign
+
+
 ### 高级用法，自定义node和edge的基础绘制方法   
 
 #### DrawView

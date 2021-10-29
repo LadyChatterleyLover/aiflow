@@ -56,9 +56,9 @@ export default {
                     text: '<@nodeName>',
                     fontFamily: 'PingFangSC-Regular',
                     fontSize: 15,
-                    textFill: '#2A2F44',
-                    textAlign: 'center',
-                    textVerticalAlign: 'middle',
+                    fill: '#2A2F44',
+                    align: 'center',
+                    verticalAlign: 'middle',
                     truncate: {
                         outerWidth: 110
                     }

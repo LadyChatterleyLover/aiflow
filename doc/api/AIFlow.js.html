@@ -44,7 +44,7 @@
  * @author zhousheng
  */
 
-import zrender, {matrix} from 'zrender';
+import {matrix, init, util, Rect, registerPainter} from 'zrender';
 import ComPlate from './comPlate';
 import OptionsManager from './OptionsManager';
 import Node from './draw/Node';
@@ -56,8 +56,8 @@ import basicEdge from './draw/basicdraw/EdgeView';
 import autoSort from './autoSort';
 import autoSortWithMedian from './autoSortWithMedian';
 import ZrEventManager from './event/ZrEventManager';
-import * as zrUtil from 'zrender/lib/core/util';
-import Eventful from 'zrender/lib/mixin/Eventful';
+import Eventful from 'zrender/lib/core/Eventful';
+import CanvasPainter from 'zrender/lib/canvas/Painter';
 import * as utils from './utils';
 import {isArray, clone as lodashClone} from 'lodash';
 
@@ -71,6 +71,8 @@ const CUSTOM_EVENTS = ['dragNode', 'dragNodeEnd', 'addEdge', 'removeEdge', 'addN
 Draw.extend(basicDraw);
 Node.extend(basicNode);
 Edge.extend(basicEdge);
+
+registerPainter('canvas', CanvasPainter);
 
 /**
  * AIFlow
@@ -116,13 +118,13 @@ export default class AIFlow {
      * @param {boolean=} globalConfig.dragWithinCanvas 拖动节点时，检测并限制节点不移动到canvas外部
      */
     constructor(dom, data, globalConfig) {
-        if (!dom || !zrUtil.isDom(dom)) {
+        if (!dom || !util.isDom(dom)) {
             throw new TypeError('AIFlow needs a HTMLDomElement to render');
         }
         this.dom = dom;
         this.data = data;
         this.optionsManager = new OptionsManager(globalConfig);
-        this._zr = zrender.init(dom, this.optionsManager.getZrOptions());
+        this._zr = init(dom, this.optionsManager.getZrOptions());
         this.workflowObj = {};
         this.drawGroup = null;
         this.maxCoord = {
@@ -230,7 +232,7 @@ export default class AIFlow {
     autoSort(autoSortOption) {
         this.optionsManager.options.autoSort.on = true;
         this.optionsManager.options.autoSort.type = autoSortOption.type;
-        zrender.util.extend(this.optionsManager.options.autoSort, autoSortOption);
+        util.extend(this.optionsManager.options.autoSort, autoSortOption);
         this._zr.remove(this.drawGroup);
         this.drawGroup = null;
         this.workflowObj.nodes.length = 0;
@@ -272,10 +274,11 @@ export default class AIFlow {
             let xArr = [];
             let yArr = [];
             workflow.nodes.forEach(node => {
-                xArr.push(node.position[0]);
-                yArr.push(node.position[1]);
+                xArr.push(node.x);
+                yArr.push(node.y);
                 const dataNode = this.data.nodes.find(dataNode => node.id === dataNode.id);
-                dataNode.position = node.position;
+                dataNode.x = node.x;
+                dataNode.y = node.y;
             });
             this.maxCoord.x = Math.max(...xArr);
             this.maxCoord.y = Math.max(...yArr);
@@ -310,10 +313,11 @@ export default class AIFlow {
             let xArr = [];
             let yArr = [];
             templateData.nodes.forEach(node => {
-                xArr.push(node.position[0]);
-                yArr.push(node.position[1]);
+                xArr.push(node.x);
+                yArr.push(node.y);
                 const dataNode = this.data.nodes.find(dataNode => node.id === dataNode.id);
-                dataNode.position = node.position;
+                dataNode.x = node.x;
+                dataNode.y = node.y;
             });
             this.maxCoord.x = Math.max(...xArr);
             this.maxCoord.y = Math.max(...yArr);
@@ -379,15 +383,21 @@ export default class AIFlow {
                 const parentTransform = drawGroup.transform || matrix.create();
                 const parentInvTransform  = matrix.create();
                 drawGroup.transform &amp;&amp; matrix.invert(parentInvTransform, parentTransform);
-                zrNode.position = [0, 0];
+                // zrNode.position = [0, 0];
+                zrNode.x = 0;
+                zrNode.y = 0;
                 const localTransform = zrNode.getLocalTransform();
                 const localInvTransform = matrix.create();
                 matrix.invert(localInvTransform, localTransform);
                 m[0] = m[3] = parentTransform[0] * localTransform[0];
                 matrix.mul(m, parentInvTransform, m);
                 matrix.mul(m, m, localInvTransform);
-                zrNode.position = [m[4], m[5]];
-                node.position = [m[4], m[5]];
+                // zrNode.position = [m[4], m[5]];
+                zrNode.x = m[4];
+                zrNode.y = m[5];
+                // node.position = [m[4], m[5]];
+                node.x = m[4];
+                node.y = m[5];
             }
             this.drawGroup.add(zrNode);
             this.workflowObj.nodes.push(n);
@@ -578,7 +588,7 @@ export default class AIFlow {
         if (!this.frameSelectIns) {
             return;
         }
-        const frameSelectInsClone = new zrender.Rect(
+        const frameSelectInsClone = new Rect(
             {
                 shape: {...this.frameSelectIns.shape},
                 style: {...this.frameSelectIns.style},
@@ -614,7 +624,7 @@ export default class AIFlow {
         }
         this.frameSelectIns &amp;&amp; this._zr.remove(this.frameSelectIns);
         const {zrX, zrY} = e.event;
-        this.frameSelectIns = new zrender.Rect({
+        this.frameSelectIns = new Rect({
             shape: {
                 x: this.frameSelectX,
                 y: this.frameSelectY,
@@ -791,25 +801,27 @@ export default class AIFlow {
             return;
         }
         const nodeToUpdate = this.workflowObj.nodes[index];
-        if (zrUtil.isObject(selector) &amp;&amp; !attributes) {
+        if (util.isObject(selector) &amp;&amp; !attributes) {
             // 如果更新了node的位置，需要更新连线
             nodeToUpdate.dom.group.attr(selector);
-            if (selector.position
-                &amp;&amp; selector.position.join('') !== nodeToUpdate.props.position.join('')) {
-                nodeToUpdate.props.position = Array.from(selector.position);
+            if (selector.x
+                &amp;&amp; selector.y
+                &amp;&amp; (selector.x !== nodeToUpdate.props.x || selector.y !== nodeToUpdate.props.y)) {
+                nodeToUpdate.props.x = selector.x;
+                nodeToUpdate.props.y = selector.y;
                 this.updateEdgeByNode(id);
             }
             // 修改shape
             // 修改点的位置
         }
-        else if (zrUtil.isString(selector) &amp;&amp; zrUtil.isObject(attributes)) {
+        else if (util.isString(selector) &amp;&amp; util.isObject(attributes)) {
             if (nodeToUpdate.children[selector]) {
                 // 更新对应形状的props
                 const currStatus = nodeToUpdate.children[selector].status;
                 const currProps = nodeToUpdate.children[selector].props[currStatus];
-                zrUtil.merge(currProps, attributes, true);
+                util.merge(currProps, attributes, true);
                 // 更新Node的props
-                nodeToUpdate.props.config[selector] = zrUtil.merge({}, nodeToUpdate.children[selector].props, true);
+                nodeToUpdate.props.config[selector] = util.merge({}, nodeToUpdate.children[selector].props, true);
                 // 如果没有更新shape属性，就直接使用zrender实例的方法设置属性
                 if (!attributes.shape) {
                     nodeToUpdate.children[selector].dom.attr(attributes);
@@ -855,7 +867,7 @@ export default class AIFlow {
             if (selector === 'inputCircles') {
                 configName = 'inputCircle';
             }
-            zrUtil.merge(nodeToUpdate.props.config[configName].normal, {z}, true);
+            util.merge(nodeToUpdate.props.config[configName].normal, {z}, true);
         });
     }
 
@@ -869,7 +881,7 @@ export default class AIFlow {
      * @param {Object} attributes 待更新的属性,属性参考对应形状的zrender实例,暂不支持根据本地Shape的props更新
      */
     updateEdge(edge, selector, attributes) {
-        if (!edge || !edge.src || !edge.to || !zrUtil.isString(selector) || !zrUtil.isObject(attributes)) {
+        if (!edge || !edge.src || !edge.to || !util.isString(selector) || !util.isObject(attributes)) {
             throw new Error('invalid params when invoking updateEdge()');
         }
         const index = this.findEdgeIndex(edge.src, edge.to);
@@ -883,8 +895,8 @@ export default class AIFlow {
             const props = shapeToUpdate.props[status];
             const prevShapeWidth = props.shape.width;
             const prevShapeHeight = props.shape.height;
-            zrUtil.merge(props, attributes, true);
-            edgeToUpdate.props.config[selector] = zrUtil.merge({}, shapeToUpdate.props, true);
+            util.merge(props, attributes, true);
+            edgeToUpdate.props.config[selector] = util.merge({}, shapeToUpdate.props, true);
             if (selector === 'triangle') {
                 if (attributes.shape) {
                     if (Number(attributes.shape.width) !== prevShapeWidth
@@ -927,7 +939,7 @@ export default class AIFlow {
                 child.props.z = z;
                 child.dom.attr({z});
             });
-            zrUtil.merge(edgeToUpdate.props.config[selector].normal, {z}, true);
+            util.merge(edgeToUpdate.props.config[selector].normal, {z}, true);
         });
     }
 
@@ -1045,7 +1057,7 @@ export default class AIFlow {
     }
 }
 
-zrUtil.mixin(AIFlow, Eventful);
+util.mixin(AIFlow, Eventful);
 </code></pre>
         </article>
     </section>
@@ -1058,7 +1070,7 @@ zrUtil.mixin(AIFlow, Eventful);
 <br class="clear">
 
 <footer>
-    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.7</a> on Fri Sep 24 2021 15:24:24 GMT+0800 (中国标准时间) using the Minami theme.
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.7</a> on Fri Oct 29 2021 16:12:59 GMT+0800 (中国标准时间) using the Minami theme.
 </footer>
 
 <script>prettyPrint();</script>

@@ -1,7 +1,7 @@
 {
   "name": "aiflow",
-  "version": "1.0.3",
-  "description": "流程图库",
+  "version": "2.0.0",
+  "description": "用于流程图、DAG图的画图库",
   "main": "dist/aiflow.js",
   "scripts": {
     "test": "jest test/",
@@ -19,6 +19,7 @@
     "aiflow",
     "auto-workflow",
     "flow",
+    "dag图",
     "流程图",
     "工作流",
     "AIFlow",
@@ -35,7 +36,7 @@
   },
   "dependencies": {
     "lodash": "^4.17.21",
-    "zrender": "^4.3.0"
+    "zrender": "^5.2.1"
   },
   "devDependencies": {
     "@babel/core": "^7.15.5",

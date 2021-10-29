@@ -2,7 +2,7 @@
  * @file utils
  * @author zhousheng
  */
-import zrender, {vector, matrix} from 'zrender';
+import {vector, matrix, Line} from 'zrender';
 
 export function mergeArrays(...arr) {
     if (arr.length === 0) {
@@ -104,14 +104,15 @@ export function calcuLinePoints(edge, nodes) {
     }
     // 如果没有指定输入点的位置，则默认是在bottom
     const pointTo = pointToPosition[endNode.props.config.inputCircle.circlePosition || 'bottom'];
-    const startNodePosition = startNode.dom.group.position;
-    const endNodePosition = endNode.dom.group.position;
+    // const startNodePosition = startNode.dom.group.position;
+    const startNodePosition = [startNode.dom.group.x, startNode.dom.group.y];
+    const endNodePosition = [endNode.dom.group.x, endNode.dom.group.y];
     const startCircle = startNode.children.outputCircles[srcInArray[1]].dom;
-    const start = startCircle.position;
+    const start = [startCircle.x, startCircle.y];
     const startDistance = startCircle.shape.r + startCircle.style.lineWidth - 1;
     let startOffset = [0, 0];
     const endCircle = endNode.children.inputCircles[distInArray[1]].dom;
-    const end = endCircle.position;
+    const end = [endCircle.x, endCircle.y];
     const endDisatance = endCircle.shape.r + endCircle.style.lineWidth - 1;
     let endOffset = [0, 0];
     // 如果圆不可见，则不进行修正
@@ -258,8 +259,12 @@ export function prepareMoveNode(zrNode, mousedownEvent, options) {
         else {
             zrNode.drift(...diffPosition);
         }
-        node.props.position = zrNode.position;
-        dataNode.position = zrNode.position;
+        // node.props.position = zrNode.position;
+        node.props.x = zrNode.x;
+        node.props.y = zrNode.y;
+        // dataNode.position = zrNode.position;
+        dataNode.x = zrNode.x;
+        dataNode.y = zrNode.y;
         zrNode.dirty();
         let n = workflowObj.nodes.find(n => {
             return n.dom.group.id === zrNode.id;
@@ -284,17 +289,17 @@ export function prepareCreateLine(outputCircle, drawGroup, srcNode, lineStyle = 
     const pos = [];
     vector.applyTransform(
         pos,
-        vector.create(outputCircle.position[0], outputCircle.position[1] + circleParam.shape.r),
+        vector.create(outputCircle.x, outputCircle.y + circleParam.shape.r),
         m
     );
     let [lineX1, lineY1] = pos;
 
     return function createLine(zr, tempLine, mousemoveEvent) {
-        let vector0 = zrender.vector.create(lineX1, lineY1);
-        let vector1 = zrender.vector.create(mousemoveEvent.offsetX, mousemoveEvent.offsetY);
+        let vector0 = vector.create(lineX1, lineY1);
+        let vector1 = vector.create(mousemoveEvent.offsetX, mousemoveEvent.offsetY);
         tempLine && zr.remove(tempLine);
-        if (zrender.vector.distance(vector1, vector0) > 10) {
-            let line = new zrender.Line({
+        if (vector.distance(vector1, vector0) > 10) {
+            let line = new Line({
                 shape: {
                     x1: lineX1,
                     y1: lineY1,

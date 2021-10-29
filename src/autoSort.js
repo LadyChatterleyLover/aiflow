@@ -3,7 +3,7 @@
  * @author zhousheng
  */
 
-import zrender from 'zrender';
+import {util} from 'zrender';
 
 /**
  * 智能排列
@@ -35,7 +35,7 @@ export default function autosort(option, isLast) {
         edges.forEach(edge => {
             if (edge.to.split(':')[0] === id) {
                 // 遇到一个，裂变一个数组
-                let tempArr = zrender.util.clone(preArr);
+                let tempArr = util.clone(preArr);
                 nodeParents[nodeParents.length] = tempArr;
                 const srcId = edge.src.split(':')[0];
                 tempArr.push(srcId);
@@ -189,7 +189,9 @@ export default function autosort(option, isLast) {
         option.nodes.forEach(node => {
             coordX = beginX + (node.level - 1) * spaceX;
             coordY = beginY + (node.order - 1) * spaceY;
-            node.position = [coordX, coordY];
+            // node.position = [coordX, coordY];
+            node.x = coordX;
+            node.y = coordY;
             let newNodeTemp = {};
             Object.assign(newNodeTemp, node);
             let nodeInputCircle = node.config.inputCircle;
@@ -210,7 +212,9 @@ export default function autosort(option, isLast) {
         option.nodes.forEach(node => {
             coordX = beginX + (node.order - 1) * spaceX;
             coordY = beginY + (node.level - 1) * spaceY;
-            node.position = [coordX, coordY];
+            // node.position = [coordX, coordY];
+            node.x = coordX;
+            node.y = coordY;
             delete node.order;
             delete node.level;
             let newNodeTemp = {};
@@ -232,8 +236,10 @@ export default function autosort(option, isLast) {
     let xArr = [];
     let yArr = [];
     newNodes.forEach(node => {
-        xArr.push(node.position[0]);
-        yArr.push(node.position[1]);
+        // xArr.push(node.position[0]);
+        xArr.push(node.x);
+        // yArr.push(node.position[1]);
+        yArr.push(node.y);
     });
     let maxX = Math.max(...xArr);
     let maxY = Math.max(...yArr);
