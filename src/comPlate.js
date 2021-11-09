@@ -7,6 +7,7 @@ import {util} from 'zrender';
 import defaultTemplate from './template/defaultTemplate';
 import iconTemplate from './template/iconTemplate';
 import diamondTemplate from './template/diamondTemplate';
+import circleTemplate from './template/circleTemplate';
 
 // 自定义变量
 let defineDataReg = /<@(\w+)>/g;
@@ -16,7 +17,8 @@ export default class ComPlate {
         this.templateObj = {
             defaultTemplate,
             iconTemplate,
-            diamondTemplate
+            diamondTemplate,
+            circleTemplate
         };
     }
 

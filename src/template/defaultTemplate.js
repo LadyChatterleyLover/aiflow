@@ -10,39 +10,42 @@ export default {
             name: 'Rect',
             normal: {
                 style: {
-                    stroke: '#2A2F44',
-                    fill: '#fff'
+                    stroke: '#ccc',
+                    fill: '#fff',
+                    lineWidth: 1
                 },
                 shape: {
                     x: 0,
                     y: 0,
-                    r: 15,
+                    r: 5,
                     width: 170,
                     height: 30
                 }
             },
             hover: {
                 style: {
-                    stroke: '#2A2F44',
-                    fill: 'rgba(0,29,255,0.10)'
+                    stroke: '#3280FA',
+                    fill: 'rgba(16,103,238,0.05)',
+                    lineWidth: 1
                 },
                 shape: {
                     x: 0,
                     y: 0,
-                    r: 15,
+                    r: 5,
                     width: 170,
                     height: 30
                 }
             },
             selected: {
                 style: {
-                    stroke: '#2A2F44',
-                    fill: 'rgba(0,29,255,0.80)'
+                    stroke: '#3280FA',
+                    fill: 'rgba(16,103,238,0.05)',
+                    lineWidth: 1
                 },
                 shape: {
                     x: 0,
                     y: 0,
-                    r: 15,
+                    r: 5,
                     width: 170,
                     height: 30
                 }
@@ -56,13 +59,14 @@ export default {
                     text: '<@nodeName>',
                     fontFamily: 'PingFangSC-Regular',
                     fontSize: 15,
-                    fill: '#2A2F44',
+                    fill: '#333',
                     align: 'center',
                     verticalAlign: 'middle',
                     truncate: {
                         outerWidth: 110
                     }
-                }
+                },
+                z: 10
             },
             hover: {
                 style: {
@@ -155,20 +159,20 @@ export default {
             name: 'BezierCurve',
             normal: {
                 style: {
-                    stroke: '#79818F',
+                    stroke: '#999',
                     lineWidth: 1
                 }
             },
             hover: {
                 style: {
-                    stroke: '#79818F',
-                    lineWidth: 4
+                    stroke: '#333',
+                    lineWidth: 1
                 }
             },
             selected: {
                 style: {
-                    stroke: '#79818F',
-                    lineWidth: 4
+                    stroke: '#333',
+                    lineWidth: 1
                 }
             }
         },
@@ -176,13 +180,19 @@ export default {
             name: 'BezierCurve',
             normal: {
                 style: {
-                    stroke: '#000000',
+                    stroke: '#ccc',
                     lineWidth: 1
                 }
             },
             hover: {
                 style: {
-                    stroke: '#000000',
+                    stroke: '#ccc',
+                    lineWidth: 2
+                }
+            },
+            selected: {
+                style: {
+                    stroke: '#ccc',
                     lineWidth: 2
                 }
             }
@@ -195,16 +205,16 @@ export default {
                     height: 6
                 },
                 style: {
-                    fill: '#404D5C'
+                    fill: '#999'
                 }
             },
             hover: {
                 shape: {
-                    width: 150,
-                    height: 90
+                    width: 10,
+                    height: 6
                 },
                 style: {
-                    fill: '#404D5C'
+                    fill: '#333'
                 }
             },
             selected: {
@@ -213,7 +223,7 @@ export default {
                     height: 6
                 },
                 style: {
-                    fill: '#404D5C'
+                    fill: '#333'
                 }
             }
         }

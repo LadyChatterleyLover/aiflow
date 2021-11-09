@@ -17,6 +17,8 @@
 
 流程图：https://auto-workflow.github.io/aiflow/output/demo/process/index.html
 
+内置模版集合：https://auto-workflow.github.io/aiflow/output/demo/builtinTemplate/index.html
+
 
 ## 技术文档
 
@@ -170,6 +172,8 @@ aiflowIns.on('nodeSelected', (e, ins) => {
 
 系统内置菱形模版diamondTemplate，由菱形和文案组成
 
+系统内置圆形模版circleTemplate，由圆形和文案组成
+
 当然还可以自定义模版，可以参考demo，定义了一个红色模版
 
 定义的模版可以在node和edge中使用，这样就可以画出不同的节点和连线了
@@ -180,7 +184,7 @@ aiflowIns.on('nodeSelected', (e, ins) => {
 // 模版对象，可以参考src/template下的模版配置
 let redTemplate = {
     node: {
-        // 元素名称为'box'
+        // 元素名称为'box'，注意，如果有输入输出点，每个node都需要一个box元素，作为外层盒子，node.name需要为'Rect'、'Polygon'、'Circle'
         box: {
             // name为形状，目前支持Rect、Circle、Image、Text、Line、Polygon、Text、Triangle、Beziercurve
             // 每种形状的具体配置，可以参考zrender文档：https://ecomfe.github.io/zrender-doc/public/api.html#zrenderdisplayable

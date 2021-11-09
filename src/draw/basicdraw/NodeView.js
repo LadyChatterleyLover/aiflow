@@ -25,6 +25,20 @@ export default {
         this.children = {};
     },
 
+    getPointsFac(type, nodeType, placement) {
+        const points = type === 'input' ? this.props.input : this.props.output;
+        switch (nodeType) {
+            case 'Circle':
+                return this.getCirclePointsPosition(points, placement);
+            case 'Polygon':
+                return this.getPolygonPointsPosition(points, placement);
+            case 'Rect':
+                return this.getRecPointsPosition(points, placement);
+            default:
+                return this.getRecPointsPosition(points, placement);
+        }
+    },
+
     /**
      * 渲染输入点
      */
@@ -33,9 +47,7 @@ export default {
             const g = this.dom.group;
             const placement = this.props.config.inputCircle.circlePosition || 'top';
             let nodeType = this.props.config.box.name;
-            const inputPoints = nodeType === 'Polygon'
-                ? this.getPolygonPointsPosition(this.props.input)
-                : this.getRecPointsPosition(this.props.input, placement);
+            const inputPoints = this.getPointsFac('input', nodeType, placement);
             this.props.input.forEach((input, index) => {
                 const ShapeClazz = Shape.getClazzByName('Circle');
                 const [x, y] = inputPoints[index];
@@ -72,14 +84,8 @@ export default {
             const g = this.dom.group;
 
             let nodeType = this.props.config.box.name;
-            let placement = '';
-
-            if (nodeType !== 'Polygon') {
-                placement = this.props.config.outputCircle.circlePosition || 'bottom';
-            }
-            const outputPoints = nodeType === 'Polygon'
-                ? this.getPolygonPointsPosition(this.props.output)
-                : this.getRecPointsPosition(this.props.output, placement);
+            const placement = this.props.config.outputCircle.circlePosition || 'bottom';
+            const outputPoints = this.getPointsFac('ouput', nodeType, placement);
             this.props.output.forEach((output, index) => {
                 const ShapeClazz = Shape.getClazzByName('Circle');
                 const [x, y] = outputPoints[index];

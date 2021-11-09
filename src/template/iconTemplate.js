@@ -20,6 +20,7 @@ iconTemplate.node.icon = {
             width: 18,
             height: 18
         },
+        z: 20,
         origin: [19, 15]
     }
 };

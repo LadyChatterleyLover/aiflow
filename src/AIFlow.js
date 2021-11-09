@@ -63,9 +63,8 @@ export default class AIFlow {
      * @param {number=} globalConfig.autoSort.beginY 起点Y坐标
      * @param {number=} globalConfig.autoSort.spaceX 横向间距，默认50
      * @param {number=} globalConfig.autoSort.spaceY 纵向间距，默认20
-     * @param {boolean=} globalConfig.autoSort.type 排序算法选择，基础的排序算法(default)，中位数排序算法(withMedium)
-     * @param {boolean=} globalConfig.autoSort.hryType 排序算法分层方法选择：基础分层方法、拓扑排序分层算法、最长路径
-     * @param {boolean=} globalConfig.autoSort.maxLayerNums 每一层的最大节点个数
+     * @param {string=} globalConfig.autoSort.type 排序算法选择，基础的排序算法(default)，中位数排序算法(withMedium)
+     * @param {string=} globalConfig.autoSort.hryType 排序算法分层方法选择：基础分层方法（default）、重心法（barycenter），所有节点尽量往底层放
      * @param {Object=} globalConfig.frameSelect 框选参数
      * @param {Object=} globalConfig.frameSelect.style 样式
      * @param {Object=} globalConfig.zoom 鼠标滚动触发缩放事件相关配置

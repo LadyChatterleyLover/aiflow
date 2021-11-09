@@ -72,7 +72,50 @@ export default class Node {
         }
         return [];
     }
-    getPolygonPointsPosition(circles, box) {
+
+    /**
+     * 圆形的坐标计算
+     *
+     * @param {Array} points 点集合
+     * @param {string} placement 位置top, right, bottom, left
+     * @param {zrender.Rect=} box 图形
+     * @return {Array<Array<number>>} 坐标
+     */
+    getCirclePointsPosition(points, placement, box) {
+        const b = box || this.dom.box;
+        if (b && Array.isArray(points)) {
+            const {x, y, r} = b.shape;
+            let start = 0;
+            const length = points.filter(p => !p.position).length;
+            let space = Math.PI / (length + 1);
+            switch (placement) {
+                case 'top':
+                    start = -1 * Math.PI;
+                    break;
+                case 'right':
+                    start = -1 * 0.5 * Math.PI;
+                    break;
+                case 'bottom':
+                    start = 0;
+                    break;
+                case 'left':
+                    start = 0.5 * Math.PI;
+                    break;
+                default:
+                    start = -Math.PI;
+                    break;
+            }
+            return points.map((p, index) => {
+                if (p.position) {
+                    return p.position;
+                }
+                const rad = start + space * (index + 1);
+                return [x + Math.cos(rad) * r, y + Math.sin(rad) * r];
+            });
+        }
+        return [];
+    }
+    getPolygonPointsPosition(circles, initPlacement, box) {
         const b = box || this.dom.box;
         if (b && Array.isArray(circles)) {
             let {points, width, height} = b.shape;
@@ -81,7 +124,7 @@ export default class Node {
             let start = [];
             let space = 0;
             return circles.map((circle, index) => {
-                let placement = circle.align || 'bottom';
+                let placement = circle.align || initPlacement;
                 switch (placement) {
                     case 'top':
                         start = points[0];

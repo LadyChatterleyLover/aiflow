@@ -9,8 +9,8 @@ import './dag.less';
 
 // 全局配置
 const GLOBAL_CONFIG = {
-    cWidth: 1600,
-    cHeight: 1600,
+    cWidth: 800,
+    cHeight: 600,
     // 是否静态图片，true：节点和连线都不可拖动，false：可以添加事件监听
     isStatic: false,
     // 开启辅助线

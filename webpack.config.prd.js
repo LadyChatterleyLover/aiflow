@@ -17,7 +17,8 @@
         autosort: './demo/autosort',
         custom: './demo/custom',
         defaultTemplate: './demo/defaultTemplate',
-        process: './demo/process'
+        process: './demo/process',
+        builtin: './demo/builtinTemplate'
     },
     output: {
         clean: true,
@@ -85,6 +86,11 @@
             filename: './demo/process/index.html',
             template: './demo/process/index.html',
             chunks: ['process']
+        }),
+        new HtmlWebpackPlugin({
+            filename: './demo/builtinTemplate/index.html',
+            template: './demo/builtinTemplate/index.html',
+            chunks: ['builtin']
         })
     ]
 };

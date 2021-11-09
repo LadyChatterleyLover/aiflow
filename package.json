@@ -1,6 +1,6 @@
 {
   "name": "aiflow",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "用于流程图、DAG图的画图库",
   "main": "dist/aiflow.js",
   "scripts": {

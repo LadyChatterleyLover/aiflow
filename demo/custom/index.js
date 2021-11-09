@@ -208,7 +208,6 @@ let node1 = {
     // 输出
     output: [
         {
-            allInputs: true,
             enbaleInputs: [{
                 id: '124',
                 inputIndex: 0
@@ -232,7 +231,6 @@ let node2 = {
     // 输出
     output: [
         {
-            allInputs: true,
             enbaleInputs: [{
                 id: '124',
                 inputIndex: 0

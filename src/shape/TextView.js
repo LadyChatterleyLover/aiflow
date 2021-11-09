@@ -16,7 +16,7 @@ export default {
     render() {
         const t = new Text(this.getRenderProps());
         // t.position = this.props.position;
-        t.x = this.props.x  || this.props.position[0];
+        t.x = this.props.x || this.props.position[0];
         t.y = this.props.y || this.props.position[1];
         return t;
     }
