@@ -1,8 +1,8 @@
 {
   "name": "aiflow",
-  "version": "2.0.2",
+  "version": "2.0.4",
   "description": "用于流程图、DAG图的画图库",
-  "main": "dist/aiflow.js",
+  "main": "dist/main.js",
   "scripts": {
     "test": "jest test/",
     "dev": "webpack-dev-server --config webpack.config.dev.js",

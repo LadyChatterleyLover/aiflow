@@ -9,13 +9,11 @@ const babelConfig = require('./babel.config.js');
 
 module.exports = {
     mode: 'production',
-    entry: [
-        './src/index'
-    ],
+    entry: './src/index',
     output: {
-        filename: 'aiflow.js',
-        library: 'AIFlow',
-        libraryTarget: 'umd',
+        library: {
+            type: 'commonjs'
+        },
         path: resolve(__dirname, 'dist/')
     },
     module: {
